@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ROLLING WATCH COLLECTION | Timeless Luxury</title>
+    <title>ROLLING WATCH COLLECTION | Luxury Timepieces</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -12,37 +12,14 @@
             background-attachment: fixed;
             font-family: 'Inter', system-ui, sans-serif;
         }
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
-            z-index: -1;
-        }
-        .hero-bg {
-            background: linear-gradient(135deg, rgba(0,0,0,0.85) 0%, rgba(26,26,46,0.9) 100%);
-            backdrop-filter: blur(2px);
-            border-bottom: 2px solid #d4af37;
-        }
-        .product-card {
-            background: rgba(255,255,255,0.95);
-            backdrop-filter: blur(2px);
-            transition: transform 0.3s ease, box-shadow 0.3s;
-            border: 1px solid rgba(212,175,55,0.2);
-        }
-        .product-card:hover {
-            transform: translateY(-5px);
-            border-color: rgba(212,175,55,0.6);
-            box-shadow: 0 25px 35px -12px rgba(0,0,0,0.3);
-        }
+        body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: -1; }
+        .hero-bg { background: linear-gradient(135deg, rgba(0,0,0,0.85), rgba(26,26,46,0.9)); backdrop-filter: blur(2px); border-bottom: 2px solid #d4af37; }
+        .product-card { background: rgba(255,255,255,0.95); backdrop-filter: blur(2px); transition: transform 0.3s, box-shadow 0.3s; border: 1px solid rgba(212,175,55,0.2); }
+        .product-card:hover { transform: translateY(-5px); border-color: rgba(212,175,55,0.6); box-shadow: 0 25px 35px -12px rgba(0,0,0,0.3); }
         .gold-text { background: linear-gradient(135deg, #e6c27a, #d4af37, #b8860b); -webkit-background-clip: text; background-clip: text; color: transparent; }
         .btn-gold { background: linear-gradient(135deg, #d4af37, #b8860b); transition: all 0.2s; }
         .btn-gold:hover { transform: scale(1.02); background: linear-gradient(135deg, #e6c27a, #d4af37); }
-        /* Notifications & loader (same as before) */
-        .notification { position: fixed; top: 85px; right: 20px; z-index: 10000; min-width: 260px; max-width: 360px; padding: 12px 18px; border-radius: 12px; background: rgba(0,0,0,0.9); backdrop-filter: blur(8px); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5); transform: translateX(120%); transition: transform 0.25s ease-out; display: flex; align-items: center; gap: 12px; border-left: 5px solid; color: white; }
+        .notification { position: fixed; top: 85px; right: 20px; z-index: 10000; min-width: 260px; padding: 12px 18px; border-radius: 12px; background: rgba(0,0,0,0.9); backdrop-filter: blur(8px); transform: translateX(120%); transition: transform 0.25s; display: flex; gap: 12px; border-left: 5px solid; color: white; }
         .notification.show { transform: translateX(0); }
         .notification-success { border-left-color: #10b981; }
         .notification-error { border-left-color: #ef4444; }
@@ -50,6 +27,8 @@
         .loader-overlay.active { visibility:visible; opacity:1; }
         .spinner { width:50px; height:50px; border:4px solid rgba(255,255,255,0.3); border-top:4px solid #d4af37; border-radius:50%; animation:spin 0.8s linear infinite; }
         @keyframes spin { 100% { transform:rotate(360deg); } }
+        .filter-slider { width: 100%; accent-color: #d4af37; }
+        .image-preview { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; margin: 4px; border: 1px solid #d4af37; }
     </style>
 </head>
 <body>
@@ -58,98 +37,132 @@
 <div id="globalLoader" class="loader-overlay"><div class="spinner"></div></div>
 
 <!-- Navbar -->
-<nav class="bg-black/80 backdrop-blur-md text-white px-6 py-4 flex justify-between items-center shadow-xl sticky top-0 z-30 border-b border-amber-700/40">
+<nav class="bg-black/80 backdrop-blur-md text-white px-6 py-4 flex justify-between items-center shadow-xl sticky top-0 z-30 border-b border-amber-700/40 flex-wrap gap-4">
     <div class="text-2xl font-bold tracking-wider"><i class="fas fa-crown text-amber-500 mr-2"></i>ROLLING WATCH <span class="gold-text">COLLECTION</span></div>
-    <div class="flex gap-5 items-center">
+    <div class="flex gap-5 items-center flex-wrap">
         <button class="nav-btn hover:text-amber-400 font-medium" data-nav="home">Home</button>
         <button class="nav-btn hover:text-amber-400 hidden" data-nav="user">My Panel</button>
         <button class="nav-btn hover:text-amber-400 hidden" data-nav="admin">Admin</button>
-        <button id="cartIconBtn" class="relative hover:text-amber-400 transition">
-            <i class="fas fa-shopping-cart text-xl"></i>
-            <span id="cartCount" class="absolute -top-2 -right-3 bg-amber-500 text-black text-xs font-bold rounded-full px-1.5 min-w-[20px] text-center">0</span>
-        </button>
-        <button id="registerBtn" class="btn-gold text-black px-5 py-1.5 rounded-full text-sm font-semibold shadow-md">Register</button>
-        <button id="loginBtn" class="border border-amber-500 hover:bg-amber-700 px-5 py-1.5 rounded-full text-sm transition">Login</button>
-        <button id="logoutBtn" class="hidden bg-gray-700 hover:bg-gray-600 px-5 py-1.5 rounded-full text-sm transition">Logout</button>
+        <button id="cartIconBtn" class="relative hover:text-amber-400"><i class="fas fa-shopping-cart text-xl"></i><span id="cartCount" class="absolute -top-2 -right-3 bg-amber-500 text-black text-xs font-bold rounded-full px-1.5 min-w-[20px] text-center">0</span></button>
+        <button id="registerBtn" class="btn-gold text-black px-5 py-1.5 rounded-full text-sm font-semibold">Register</button>
+        <button id="loginBtn" class="border border-amber-500 hover:bg-amber-700 px-5 py-1.5 rounded-full text-sm">Login</button>
+        <button id="logoutBtn" class="hidden bg-gray-700 hover:bg-gray-600 px-5 py-1.5 rounded-full text-sm">Logout</button>
     </div>
 </nav>
 
 <!-- Hero -->
-<section class="hero-bg text-white py-24 md:py-32">
+<section class="hero-bg text-white py-20 md:py-28">
     <div class="max-w-7xl mx-auto px-6 text-center">
-        <div class="inline-block mb-4 px-4 py-1 border border-amber-500/50 rounded-full text-sm uppercase tracking-wider">Since 2025</div>
+        <div class="inline-block mb-4 px-4 py-1 border border-amber-500/50 rounded-full text-sm uppercase">Since 2025</div>
         <h1 class="text-5xl md:text-7xl font-bold mb-4">Timeless <span class="gold-text">Elegance</span></h1>
         <p class="text-xl md:text-2xl text-gray-200 max-w-2xl mx-auto">Inspired by luxury, crafted for eternity.</p>
         <div class="mt-10 flex justify-center gap-5">
-            <button id="heroShopBtn" class="btn-gold text-black px-8 py-3 rounded-full font-semibold text-lg shadow-xl">Explore Collection</button>
+            <button id="heroShopBtn" class="btn-gold text-black px-8 py-3 rounded-full font-semibold text-lg">Explore Collection</button>
             <button id="heroExploreBtn" class="border border-white/40 hover:bg-white/10 px-8 py-3 rounded-full font-semibold text-lg">Discover Craftsmanship</button>
         </div>
     </div>
 </section>
 
-<!-- Home (Product Grid) -->
-<section id="home-section" class="max-w-7xl mx-auto px-4 py-16">
-    <div class="text-center mb-12">
+<!-- Filters & Search -->
+<section class="max-w-7xl mx-auto px-4 py-8">
+    <div class="bg-black/60 backdrop-blur-md rounded-2xl p-6 border border-amber-500/30">
+        <div class="flex flex-wrap gap-4 items-end">
+            <div class="flex-1 min-w-[200px]">
+                <label class="text-white text-sm block mb-1">Search watches</label>
+                <input type="text" id="searchInput" placeholder="Rolex, Omega, Cartier..." class="w-full bg-gray-800 text-white border border-amber-500/50 rounded-lg p-2">
+            </div>
+            <div class="w-48">
+                <label class="text-white text-sm block mb-1">Sort by</label>
+                <select id="sortSelect" class="w-full bg-gray-800 text-white border border-amber-500/50 rounded-lg p-2">
+                    <option value="default">Default</option>
+                    <option value="price_asc">Price (Low to High)</option>
+                    <option value="price_desc">Price (High to Low)</option>
+                </select>
+            </div>
+            <div class="w-48">
+                <label class="text-white text-sm block mb-1">Min Price (RWF)</label>
+                <input type="number" id="minPrice" placeholder="0" class="w-full bg-gray-800 text-white border border-amber-500/50 rounded-lg p-2">
+            </div>
+            <div class="w-48">
+                <label class="text-white text-sm block mb-1">Max Price (RWF)</label>
+                <input type="number" id="maxPrice" placeholder="No max" class="w-full bg-gray-800 text-white border border-amber-500/50 rounded-lg p-2">
+            </div>
+            <button id="resetFiltersBtn" class="btn-gold text-black px-4 py-2 rounded-lg font-semibold">Reset</button>
+        </div>
+    </div>
+</section>
+
+<!-- Home: Products Grid -->
+<section id="home-section" class="max-w-7xl mx-auto px-4 pb-12">
+    <div class="text-center mb-8">
         <h2 class="text-4xl font-bold text-white">Our <span class="gold-text">Collection</span></h2>
         <div class="w-24 h-1 bg-amber-500 mx-auto mt-3 rounded-full"></div>
-        <p class="text-gray-200 mt-3">Each timepiece tells a story of excellence</p>
     </div>
     <div id="productsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"></div>
 </section>
 
+<!-- Recommendations Section -->
+<section id="recommendations-section" class="max-w-7xl mx-auto px-4 py-8 border-t border-amber-500/30">
+    <h2 class="text-2xl font-bold text-white mb-6"><i class="fas fa-star text-amber-500 mr-2"></i>Recommended for You</h2>
+    <div id="recommendationsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+</section>
+
+<!-- Recently Viewed Section -->
+<section id="recently-viewed-section" class="max-w-7xl mx-auto px-4 py-8 border-t border-amber-500/30">
+    <h2 class="text-2xl font-bold text-white mb-6"><i class="fas fa-history text-amber-500 mr-2"></i>Recently Viewed</h2>
+    <div id="recentlyViewedGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+</section>
+
 <!-- User Panel -->
 <section id="user-panel-section" class="max-w-4xl mx-auto px-4 py-12 hidden">
-    <div class="bg-black/70 backdrop-blur-md rounded-2xl shadow-2xl p-6 border border-amber-500/30 text-white">
+    <div class="bg-black/70 backdrop-blur-md rounded-2xl p-6 border border-amber-500/30 text-white">
         <h2 class="text-2xl font-bold border-b border-amber-500/40 pb-2 mb-4"><i class="fas fa-id-card text-amber-500 mr-2"></i>My Dashboard</h2>
         <div id="userInfoDisplay"></div>
-        <div class="mt-6 bg-black/40 p-5 rounded-xl">
-            <h3 class="font-semibold text-lg">📧 Contact & Social</h3>
-            <p>Official Contact Email: <span id="contactEmailSpan" class="font-mono text-amber-400"></span></p>
-            <div id="socialLinksContainer" class="flex gap-4 mt-3"></div>
-        </div>
+        <div class="mt-6 bg-black/40 p-5 rounded-xl"><h3 class="font-semibold text-lg">📧 Contact & Social</h3><p>Email: <span id="contactEmailSpan" class="font-mono text-amber-400"></span></p><div id="socialLinksContainer" class="flex gap-4 mt-3"></div></div>
     </div>
 </section>
 
 <!-- Admin Panel -->
 <section id="admin-panel-section" class="max-w-6xl mx-auto px-4 py-12 hidden">
-    <div class="bg-black/80 backdrop-blur-md rounded-2xl shadow-2xl p-6 mb-8 border border-amber-500/30 text-white">
+    <div class="bg-black/80 backdrop-blur-md rounded-2xl p-6 mb-8 border border-amber-500/30 text-white">
         <h2 class="text-2xl font-bold text-amber-400">🛠️ Product Management</h2>
         <form id="productForm" class="grid md:grid-cols-2 gap-4 mt-5">
             <input type="text" id="productName" placeholder="Watch name" class="bg-gray-900 text-white border border-amber-500/50 p-2 rounded-lg" required>
-            <input type="number" step="0.01" id="productPrice" placeholder="Price (USD)" class="bg-gray-900 text-white border border-amber-500/50 p-2 rounded-lg" required>
+            <input type="number" step="1" id="productPrice" placeholder="Price (RWF)" class="bg-gray-900 text-white border border-amber-500/50 p-2 rounded-lg" required>
             <textarea id="productDesc" placeholder="Description" class="bg-gray-900 text-white border border-amber-500/50 p-2 rounded-lg md:col-span-2"></textarea>
-            <input type="file" id="productImage" accept="image/*" class="bg-gray-900 text-white border border-amber-500/50 p-1 rounded-lg">
+            <div class="md:col-span-2">
+                <label class="block text-sm mb-1">Product Images (multiple, max 5)</label>
+                <input type="file" id="productImages" accept="image/*" multiple class="bg-gray-900 text-white border border-amber-500/50 p-1 rounded-lg w-full">
+                <div id="existingImagesPreview" class="flex flex-wrap gap-2 mt-2"></div>
+                <p class="text-xs text-gray-400 mt-1">Select up to 5 images. On edit, new images will replace existing ones.</p>
+            </div>
             <div class="md:col-span-2 flex gap-3">
-                <button type="submit" class="btn-gold text-black px-5 py-2 rounded-lg font-semibold shadow"><span id="productFormTitle">➕ Add New Watch</span></button>
-                <button type="button" id="cancelEdit" class="bg-gray-600 hover:bg-gray-500 text-white px-5 py-2 rounded-lg transition hidden">Cancel Edit</button>
+                <button type="submit" class="btn-gold text-black px-5 py-2 rounded-lg font-semibold"><span id="productFormTitle">➕ Add New Watch</span></button>
+                <button type="button" id="cancelEdit" class="bg-gray-600 hover:bg-gray-500 text-white px-5 py-2 rounded-lg hidden">Cancel Edit</button>
             </div>
         </form>
-        <div class="mt-8"><h3 class="font-bold text-xl text-amber-400">📋 Inventory</h3><div id="productListAdmin" class="mt-2 space-y-2 text-white"></div></div>
+        <div class="mt-8"><h3 class="font-bold text-xl text-amber-400">📋 Inventory</h3><div id="productListAdmin" class="mt-2 space-y-2"></div></div>
     </div>
     <div class="grid md:grid-cols-2 gap-6">
-        <div class="bg-black/70 backdrop-blur-md p-5 rounded-2xl shadow border border-amber-500/20 text-white"><h3 class="text-xl font-bold mb-3 text-amber-400">👥 Registered Users</h3><div class="overflow-auto max-h-72"><table id="userListAdmin" class="w-full text-sm"></table></div></div>
-        <div id="performanceStats" class="bg-black/70 backdrop-blur-md p-5 rounded-2xl shadow border border-amber-500/20 text-white"></div>
+        <div class="bg-black/70 backdrop-blur-md p-5 rounded-2xl border border-amber-500/20 text-white"><h3 class="text-xl font-bold mb-3 text-amber-400">👥 Registered Users</h3><div class="overflow-auto max-h-72"><table id="userListAdmin" class="w-full text-sm"></table></div></div>
+        <div id="performanceStats" class="bg-black/70 backdrop-blur-md p-5 rounded-2xl border border-amber-500/20 text-white"></div>
     </div>
 </section>
 
-<!-- Cart Sidebar -->
+<!-- Cart Sidebar (same as before) -->
 <div id="cartOverlay" class="fixed inset-0 bg-black/80 z-40 hidden"></div>
 <div id="cartSidebar" class="fixed top-0 right-0 w-96 h-full bg-black/90 backdrop-blur-xl shadow-2xl z-50 transform translate-x-full transition-transform duration-300 flex flex-col border-l border-amber-500/30">
     <div class="flex justify-between items-center p-5 border-b border-amber-500/30"><h2 class="text-2xl font-bold text-amber-400"><i class="fas fa-shopping-bag mr-2"></i>Your Cart</h2><button id="closeCart" class="text-3xl text-gray-400 hover:text-amber-400">&times;</button></div>
     <div id="cartItems" class="flex-1 overflow-y-auto p-4 text-white"></div>
-    <div class="border-t border-amber-500/30 p-5 bg-black/50"><div class="flex justify-between text-xl font-bold text-white">Total: $<span id="cartTotal" class="text-amber-400">0.00</span></div><button class="w-full btn-gold text-black py-3 mt-4 rounded-full font-semibold">Secure Checkout</button></div>
+    <div class="border-t border-amber-500/30 p-5 bg-black/50"><div class="flex justify-between text-xl font-bold text-white">Total: <span id="cartTotal" class="text-amber-400">0</span> RWF</div><button class="w-full btn-gold text-black py-3 mt-4 rounded-full font-semibold">Secure Checkout</button></div>
 </div>
 
 <!-- Modals -->
-<div id="registerModal" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 hidden">
-    <div class="bg-gradient-to-br from-gray-900 to-black rounded-2xl max-w-md w-full p-6 relative border border-amber-500/30"><button id="closeRegModal" class="absolute top-3 right-4 text-2xl text-gray-400 hover:text-amber-400">&times;</button><h3 class="text-2xl font-bold text-amber-400 mb-4">Create Account</h3><form id="regForm"><input type="text" id="regFirstName" placeholder="First Name" class="w-full bg-gray-800 text-white border border-amber-500/50 p-2 mb-3 rounded-lg" required><input type="text" id="regLastName" placeholder="Last Name" class="w-full bg-gray-800 text-white border border-amber-500/50 p-2 mb-3 rounded-lg" required><input type="email" id="regEmail" placeholder="Email" class="w-full bg-gray-800 text-white border border-amber-500/50 p-2 mb-3 rounded-lg" required><input type="password" id="regPassword" placeholder="Password (min 6 chars)" class="w-full bg-gray-800 text-white border border-amber-500/50 p-2 mb-3 rounded-lg" required><input type="password" id="regConfirmPassword" placeholder="Confirm Password" class="w-full bg-gray-800 text-white border border-amber-500/50 p-2 mb-4 rounded-lg" required><button type="submit" class="w-full btn-gold text-black py-2 rounded-full font-semibold">Register</button></form></div>
-</div>
-<div id="loginModal" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 hidden">
-    <div class="bg-gradient-to-br from-gray-900 to-black rounded-2xl max-w-md w-full p-6 relative border border-amber-500/30"><button id="closeLoginModal" class="absolute top-3 right-4 text-2xl text-gray-400 hover:text-amber-400">&times;</button><h3 class="text-2xl font-bold text-amber-400 mb-4">Welcome Back</h3><form id="loginForm"><input type="email" id="loginEmail" placeholder="Email" class="w-full bg-gray-800 text-white border border-amber-500/50 p-2 mb-3 rounded-lg" required><input type="password" id="loginPassword" placeholder="Password" class="w-full bg-gray-800 text-white border border-amber-500/50 p-2 mb-4 rounded-lg" required><button type="submit" class="w-full btn-gold text-black py-2 rounded-full font-semibold">Login</button><p class="text-xs text-center mt-3 text-gray-400">Admin: admin@rollingwatch.com</p></form></div>
-</div>
+<div id="registerModal" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 hidden"><div class="bg-gradient-to-br from-gray-900 to-black rounded-2xl max-w-md w-full p-6 relative border border-amber-500/30"><button id="closeRegModal" class="absolute top-3 right-4 text-2xl text-gray-400 hover:text-amber-400">&times;</button><h3 class="text-2xl font-bold text-amber-400 mb-4">Create Account</h3><form id="regForm"><input type="text" id="regFirstName" placeholder="First Name" class="w-full bg-gray-800 text-white border border-amber-500/50 p-2 mb-3 rounded-lg" required><input type="text" id="regLastName" placeholder="Last Name" class="w-full bg-gray-800 text-white border border-amber-500/50 p-2 mb-3 rounded-lg" required><input type="email" id="regEmail" placeholder="Email" class="w-full bg-gray-800 text-white border border-amber-500/50 p-2 mb-3 rounded-lg" required><input type="password" id="regPassword" placeholder="Password (min 6 chars)" class="w-full bg-gray-800 text-white border border-amber-500/50 p-2 mb-3 rounded-lg" required><input type="password" id="regConfirmPassword" placeholder="Confirm Password" class="w-full bg-gray-800 text-white border border-amber-500/50 p-2 mb-4 rounded-lg" required><button type="submit" class="w-full btn-gold text-black py-2 rounded-full font-semibold">Register</button></form></div></div>
+<div id="loginModal" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 hidden"><div class="bg-gradient-to-br from-gray-900 to-black rounded-2xl max-w-md w-full p-6 relative border border-amber-500/30"><button id="closeLoginModal" class="absolute top-3 right-4 text-2xl text-gray-400 hover:text-amber-400">&times;</button><h3 class="text-2xl font-bold text-amber-400 mb-4">Welcome Back</h3><form id="loginForm"><input type="email" id="loginEmail" placeholder="Email" class="w-full bg-gray-800 text-white border border-amber-500/50 p-2 mb-3 rounded-lg" required><input type="password" id="loginPassword" placeholder="Password" class="w-full bg-gray-800 text-white border border-amber-500/50 p-2 mb-4 rounded-lg" required><button type="submit" class="w-full btn-gold text-black py-2 rounded-full font-semibold">Login</button><p class="text-xs text-center mt-3 text-gray-400">Admin: admin@rollingwatch.com</p></form></div></div>
 
 <script type="module">
-    // ----------------------------- FIREBASE CONFIG (replace with your own) -----------------------------
+    // ---------- Firebase Config (replace with your own) ----------
     const firebaseConfig = {
         apiKey: "AIzaSyDZxBIpI6QdN1MjK3t1N_m4BVfEEoI_SGY",
         authDomain: "rolling-watch-collection.firebaseapp.com",
@@ -158,21 +171,18 @@
         messagingSenderId: "780300275683",
         appId: "1:780300275683:web:05a06771ac53c744e3dad6"
     };
-
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { getFirestore, collection, doc, setDoc, getDocs, getDoc, updateDoc, deleteDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
     const IMGBB_API_KEY = "4fa8b99e2ba50cfe70cc9f69257055bb";
 
-    // ----------------------------- Helper functions -----------------------------
+    // Helpers
     const loader = document.getElementById('globalLoader');
     const showLoader = () => loader.classList.add('active');
     const hideLoader = () => loader.classList.remove('active');
-
     function showMessage(msg, type = 'info') {
         const container = document.getElementById('notificationContainer');
         if (!container) return;
@@ -188,18 +198,11 @@
     }
     function escapeHtml(s) { if (!s) return ''; return s.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
     function getFriendlyError(code) {
-        const map = {
-            'auth/email-already-in-use': 'Email already registered.',
-            'auth/invalid-email': 'Invalid email.',
-            'auth/weak-password': 'Password must be 6+ chars.',
-            'auth/wrong-password': 'Incorrect password.',
-            'auth/user-not-found': 'No account. Register first.',
-            'auth/too-many-requests': 'Too many attempts. Try later.'
-        };
+        const map = { 'auth/email-already-in-use': 'Email already registered.', 'auth/invalid-email': 'Invalid email.', 'auth/weak-password': 'Password must be 6+ chars.', 'auth/wrong-password': 'Incorrect password.', 'auth/user-not-found': 'No account. Register first.', 'auth/too-many-requests': 'Too many attempts.' };
         return map[code] || `Error: ${code}`;
     }
 
-    // ----------------------------- DOM Elements (single cache) -----------------------------
+    // DOM cache
     const dom = {
         homeSec: document.getElementById('home-section'),
         userSec: document.getElementById('user-panel-section'),
@@ -234,13 +237,20 @@
         productName: document.getElementById('productName'),
         productPrice: document.getElementById('productPrice'),
         productDesc: document.getElementById('productDesc'),
-        productImage: document.getElementById('productImage'),
-        productFormTitle: document.getElementById('productFormTitle')
+        productImages: document.getElementById('productImages'),
+        productFormTitle: document.getElementById('productFormTitle'),
+        searchInput: document.getElementById('searchInput'),
+        sortSelect: document.getElementById('sortSelect'),
+        minPrice: document.getElementById('minPrice'),
+        maxPrice: document.getElementById('maxPrice'),
+        resetFiltersBtn: document.getElementById('resetFiltersBtn'),
+        recommendationsGrid: document.getElementById('recommendationsGrid'),
+        recentlyViewedGrid: document.getElementById('recentlyViewedGrid')
     };
+    let currentUser = null, userRole = 'guest', allProducts = [], filteredProducts = [], cart = [], editingId = null;
+    let recentlyViewedIds = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
 
-    let currentUser = null, userRole = 'guest', products = [], cart = [], editingId = null;
-
-    // ----------------------------- Cart -----------------------------
+    // Cart functions
     function saveCart() { localStorage.setItem('rollingWatchCart', JSON.stringify(cart)); updateCartUI(); }
     function loadCart() { cart = JSON.parse(localStorage.getItem('rollingWatchCart') || '[]'); updateCartUI(); }
     function updateCartUI() {
@@ -251,137 +261,174 @@
             total += item.price * item.quantity;
             count += item.quantity;
             const div = document.createElement('div');
-            div.className = 'flex gap-3 border-b border-gray-700 pb-3 mb-3 text-white';
-            div.innerHTML = `<img src="${item.imageUrl || 'https://via.placeholder.com/60'}" class="w-14 h-14 object-cover rounded"><div class="flex-1"><b>${escapeHtml(item.name)}</b><br>$${item.price}<div class="flex gap-2 mt-1"><button class="cart-dec bg-gray-700 px-2 rounded" data-idx="${idx}">-</button><span>${item.quantity}</span><button class="cart-inc bg-gray-700 px-2 rounded" data-idx="${idx}">+</button><button class="cart-del text-red-400 ml-1" data-idx="${idx}">🗑</button></div></div><div>$${(item.price * item.quantity).toFixed(2)}</div>`;
+            div.className = 'flex gap-3 border-b border-gray-700 pb-3 mb-3';
+            div.innerHTML = `<img src="${item.images?.[0] || 'https://via.placeholder.com/60'}" class="w-14 h-14 object-cover rounded"><div class="flex-1"><b>${escapeHtml(item.name)}</b><br>${item.price.toLocaleString()} RWF<div class="flex gap-2 mt-1"><button class="cart-dec bg-gray-700 px-2 rounded" data-idx="${idx}">-</button><span>${item.quantity}</span><button class="cart-inc bg-gray-700 px-2 rounded" data-idx="${idx}">+</button><button class="cart-del text-red-400 ml-1" data-idx="${idx}">🗑</button></div></div><div>${(item.price * item.quantity).toLocaleString()} RWF</div>`;
             dom.cartItemsDiv.appendChild(div);
         });
-        dom.cartTotal.innerText = total.toFixed(2);
+        dom.cartTotal.innerText = total.toLocaleString();
         dom.cartCount.innerText = count;
-        // Use event delegation instead of multiple listeners
-        dom.cartItemsDiv.querySelectorAll('.cart-dec').forEach(btn => btn.onclick = () => { let i = btn.dataset.idx; if (cart[i].quantity > 1) cart[i].quantity--; else cart.splice(i, 1); saveCart(); renderProducts(); });
-        dom.cartItemsDiv.querySelectorAll('.cart-inc').forEach(btn => btn.onclick = () => { let i = btn.dataset.idx; cart[i].quantity++; saveCart(); renderProducts(); });
-        dom.cartItemsDiv.querySelectorAll('.cart-del').forEach(btn => btn.onclick = () => { cart.splice(btn.dataset.idx, 1); saveCart(); renderProducts(); });
+        dom.cartItemsDiv.querySelectorAll('.cart-dec').forEach(btn => btn.onclick = () => { let i = btn.dataset.idx; if (cart[i].quantity > 1) cart[i].quantity--; else cart.splice(i, 1); saveCart(); applyFiltersAndRender(); });
+        dom.cartItemsDiv.querySelectorAll('.cart-inc').forEach(btn => btn.onclick = () => { let i = btn.dataset.idx; cart[i].quantity++; saveCart(); applyFiltersAndRender(); });
+        dom.cartItemsDiv.querySelectorAll('.cart-del').forEach(btn => btn.onclick = () => { cart.splice(btn.dataset.idx, 1); saveCart(); applyFiltersAndRender(); });
     }
-    function addToCart(p) { let e = cart.find(i => i.id === p.id); e ? e.quantity++ : cart.push({ ...p, quantity: 1 }); saveCart(); showMessage(`${p.name} added`, 'success'); }
+    function addToCart(product) { let e = cart.find(i => i.id === product.id); e ? e.quantity++ : cart.push({ id: product.id, name: product.name, price: product.price, images: product.images, quantity: 1 }); saveCart(); showMessage(`${product.name} added`, 'success'); }
 
-    // ----------------------------- Products & Admin -----------------------------
+    // Recently viewed tracking
+    function addRecentlyViewed(productId) {
+        recentlyViewedIds = recentlyViewedIds.filter(id => id !== productId);
+        recentlyViewedIds.unshift(productId);
+        if (recentlyViewedIds.length > 6) recentlyViewedIds.pop();
+        localStorage.setItem('recentlyViewed', JSON.stringify(recentlyViewedIds));
+        renderRecentlyViewed();
+    }
+    function renderRecentlyViewed() {
+        if (!dom.recentlyViewedGrid) return;
+        const recentProducts = allProducts.filter(p => recentlyViewedIds.includes(p.id));
+        if (recentProducts.length === 0) { dom.recentlyViewedGrid.innerHTML = '<div class="col-span-full text-center text-gray-400 py-8">No recently viewed watches</div>'; return; }
+        dom.recentlyViewedGrid.innerHTML = recentProducts.map(p => productCardTemplate(p)).join('');
+        attachAddToCartEvents(dom.recentlyViewedGrid);
+    }
+    function renderRecommendations() {
+        if (!dom.recommendationsGrid) return;
+        // Simple recommendation: random products not in cart and not currently displayed (but we can just pick 3 random from allProducts)
+        let recs = [...allProducts];
+        if (cart.length) {
+            const cartIds = cart.map(c => c.id);
+            recs = recs.filter(p => !cartIds.includes(p.id));
+        }
+        recs = recs.sort(() => 0.5 - Math.random()).slice(0, 3);
+        if (recs.length === 0) recs = allProducts.slice(0, 3);
+        dom.recommendationsGrid.innerHTML = recs.map(p => productCardTemplate(p)).join('');
+        attachAddToCartEvents(dom.recommendationsGrid);
+    }
+
+    // Product rendering with filters, sort, search
+    function applyFiltersAndRender() {
+        let filtered = [...allProducts];
+        const searchTerm = dom.searchInput.value.toLowerCase();
+        if (searchTerm) filtered = filtered.filter(p => p.name.toLowerCase().includes(searchTerm) || (p.description && p.description.toLowerCase().includes(searchTerm)));
+        const min = parseFloat(dom.minPrice.value);
+        if (!isNaN(min)) filtered = filtered.filter(p => p.price >= min);
+        const max = parseFloat(dom.maxPrice.value);
+        if (!isNaN(max)) filtered = filtered.filter(p => p.price <= max);
+        const sort = dom.sortSelect.value;
+        if (sort === 'price_asc') filtered.sort((a,b) => a.price - b.price);
+        else if (sort === 'price_desc') filtered.sort((a,b) => b.price - a.price);
+        filteredProducts = filtered;
+        const grid = document.getElementById('productsGrid');
+        if (!filteredProducts.length) { grid.innerHTML = '<div class="col-span-full text-center text-gray-300 py-10">No watches found</div>'; return; }
+        grid.innerHTML = filteredProducts.map(p => productCardTemplate(p)).join('');
+        attachAddToCartEvents(grid);
+        renderRecommendations();
+    }
+    function productCardTemplate(p) {
+        const firstImage = (p.images && p.images.length) ? p.images[0] : 'https://via.placeholder.com/300';
+        return `<div class="product-card bg-white/95 rounded-2xl shadow-xl overflow-hidden cursor-pointer" data-id="${p.id}">
+            <img src="${firstImage}" class="h-56 w-full object-cover" loading="lazy">
+            <div class="p-4"><h3 class="font-bold text-xl text-gray-900">${escapeHtml(p.name)}</h3><p class="text-gray-700 text-sm mt-1">${escapeHtml(p.description?.substring(0,80) || '')}</p>
+            <div class="flex justify-between items-center mt-4"><span class="text-2xl font-bold text-amber-700">${p.price.toLocaleString()} RWF</span><button class="add-cart btn-gold text-black font-semibold px-4 py-2 rounded-full text-sm" data-id="${p.id}"><i class="fas fa-cart-plus mr-1"></i> Add</button></div></div>
+        </div>`;
+    }
+    function attachAddToCartEvents(container) {
+        container.querySelectorAll('.add-cart').forEach(btn => btn.onclick = (e) => { e.stopPropagation(); const prod = allProducts.find(p => p.id === btn.dataset.id); if (prod) addToCart(prod); });
+        container.querySelectorAll('.product-card').forEach(card => card.onclick = (e) => { if (e.target.classList.contains('add-cart')) return; const id = card.dataset.id; addRecentlyViewed(id); });
+    }
+    function refreshAllProductDisplay() { applyFiltersAndRender(); renderRecentlyViewed(); renderRecommendations(); }
+
+    // Admin: product CRUD with multiple images upload to ImgBB
+    async function uploadMultipleImages(files) {
+        const urls = [];
+        for (const file of files) {
+            const fd = new FormData(); fd.append('image', file); fd.append('key', IMGBB_API_KEY);
+            const res = await fetch('https://api.imgbb.com/1/upload', { method: 'POST', body: fd });
+            const data = await res.json();
+            if (!data.success) throw new Error(`Upload failed for ${file.name}`);
+            urls.push(data.data.url);
+        }
+        return urls;
+    }
     async function fetchProducts() {
         showLoader();
         try {
             const snap = await getDocs(collection(db, "products"));
-            products = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-            renderProducts();
+            allProducts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            refreshAllProductDisplay();
             if (userRole === 'admin') { await renderAdminList(); await fetchUsers(); }
         } catch (e) { showMessage('Load products failed', 'error'); } finally { hideLoader(); }
     }
-    function renderProducts() {
-        const grid = document.getElementById('productsGrid');
-        if (!products.length) { grid.innerHTML = '<div class="text-center py-10 text-gray-300">✨ No watches yet. Admin can add.</div>'; return; }
-        grid.innerHTML = products.map(p => `
-            <div class="product-card bg-white/95 rounded-2xl shadow-xl overflow-hidden">
-                <img src="${p.imageUrl || 'https://via.placeholder.com/300'}" class="h-56 w-full object-cover">
-                <div class="p-4"><h3 class="font-bold text-xl text-gray-900">${escapeHtml(p.name)}</h3><p class="text-gray-700 text-sm mt-1">${escapeHtml(p.description?.substring(0, 80) || '')}</p>
-                <div class="flex justify-between items-center mt-4"><span class="text-2xl font-bold text-amber-700">$${p.price}</span><button class="add-cart btn-gold text-black font-semibold px-4 py-2 rounded-full text-sm" data-id="${p.id}"><i class="fas fa-cart-plus mr-1"></i> Add</button></div></div>
-            </div>
-        `).join('');
-        document.querySelectorAll('.add-cart').forEach(btn => btn.onclick = () => { const prod = products.find(p => p.id === btn.dataset.id); if (prod) addToCart(prod); });
-    }
     async function renderAdminList() {
         if (!dom.productList) return;
-        if (!products.length) { dom.productList.innerHTML = '<div class="text-gray-400">No products</div>'; return; }
-        dom.productList.innerHTML = products.map(p => `
-            <div class="flex justify-between items-center border-b border-amber-500/30 py-2"><div class="flex items-center gap-2"><img src="${p.imageUrl || 'https://via.placeholder.com/40'}" class="w-8 h-8 object-cover rounded"><span><strong>${escapeHtml(p.name)}</strong> - $${p.price}</span></div><div><button class="edit-prod bg-blue-600 hover:bg-blue-500 text-white px-2 py-1 rounded text-sm mr-1" data-id="${p.id}">Edit</button><button class="del-prod bg-red-600 hover:bg-red-500 text-white px-2 py-1 rounded text-sm" data-id="${p.id}">Del</button></div></div>
-        `).join('');
+        if (!allProducts.length) { dom.productList.innerHTML = '<div class="text-gray-400">No products</div>'; return; }
+        dom.productList.innerHTML = allProducts.map(p => `<div class="flex justify-between items-center border-b border-amber-500/30 py-2"><div class="flex items-center gap-2"><img src="${(p.images && p.images[0]) || 'https://via.placeholder.com/40'}" class="w-8 h-8 object-cover rounded"><span><strong>${escapeHtml(p.name)}</strong> - ${p.price.toLocaleString()} RWF</span></div><div><button class="edit-prod bg-blue-600 hover:bg-blue-500 text-white px-2 py-1 rounded text-sm mr-1" data-id="${p.id}">Edit</button><button class="del-prod bg-red-600 hover:bg-red-500 text-white px-2 py-1 rounded text-sm" data-id="${p.id}">Del</button></div></div>`).join('');
         dom.productList.querySelectorAll('.edit-prod').forEach(btn => btn.onclick = () => openEdit(btn.dataset.id));
         dom.productList.querySelectorAll('.del-prod').forEach(btn => btn.onclick = async () => { if (confirm('Delete product?')) await deleteProduct(btn.dataset.id); });
     }
     async function deleteProduct(id) {
         showLoader();
-        try { await deleteDoc(doc(db, "products", id)); showMessage('Product deleted', 'success'); await fetchProducts(); if (userRole === 'admin') await fetchUsers(); }
-        catch (e) { showMessage('Delete failed', 'error'); } finally { hideLoader(); }
+        try { await deleteDoc(doc(db, "products", id)); showMessage('Product deleted', 'success'); await fetchProducts(); if (userRole === 'admin') await fetchUsers(); } catch (e) { showMessage('Delete failed', 'error'); } finally { hideLoader(); }
     }
     async function openEdit(id) {
-        const prod = products.find(p => p.id === id);
+        const prod = allProducts.find(p => p.id === id);
         if (!prod) return;
         editingId = id;
         dom.productName.value = prod.name;
         dom.productDesc.value = prod.description || '';
         dom.productPrice.value = prod.price;
-        dom.productFormTitle.innerText = '✏️ Edit Watch';
+        dom.productFormTitle.innerText = '✏️ Update Watch';
         dom.cancelEdit.classList.remove('hidden');
+        const previewDiv = document.getElementById('existingImagesPreview');
+        if (previewDiv && prod.images) previewDiv.innerHTML = prod.images.map(url => `<img src="${url}" class="image-preview">`).join('');
     }
-    function resetEdit() { editingId = null; dom.productForm.reset(); dom.productFormTitle.innerText = '➕ Add New Watch'; dom.cancelEdit.classList.add('hidden'); dom.productImage.value = ''; }
-    async function uploadToImgBB(file) {
-        const fd = new FormData(); fd.append('image', file); fd.append('key', IMGBB_API_KEY);
-        const res = await fetch('https://api.imgbb.com/1/upload', { method: 'POST', body: fd });
-        const data = await res.json();
-        if (!data.success) throw new Error('ImgBB upload failed');
-        return data.data.url;
-    }
+    function resetEdit() { editingId = null; dom.productForm.reset(); dom.productFormTitle.innerText = '➕ Add New Watch'; dom.cancelEdit.classList.add('hidden'); document.getElementById('existingImagesPreview').innerHTML = ''; }
     dom.productForm.onsubmit = async (e) => {
         e.preventDefault();
-        const name = dom.productName.value.trim(), desc = dom.productDesc.value.trim(), price = parseFloat(dom.productPrice.value), imgFile = dom.productImage.files[0];
-        if (!name || isNaN(price)) { showMessage('Name & price required', 'warning'); return; }
+        const name = dom.productName.value.trim(), desc = dom.productDesc.value.trim(), price = parseInt(dom.productPrice.value);
+        const imageFiles = Array.from(dom.productImages.files);
+        if (!name || isNaN(price)) { showMessage('Name and valid price required', 'warning'); return; }
         showLoader();
         try {
-            let imgUrl = null;
+            let images = [];
             if (editingId) {
-                const existingRef = doc(db, "products", editingId);
-                const oldData = (await getDoc(existingRef)).data();
-                if (imgFile) imgUrl = await uploadToImgBB(imgFile); else imgUrl = oldData.imageUrl;
-                await updateDoc(existingRef, { name, description: desc, price, imageUrl: imgUrl });
+                if (imageFiles.length) images = await uploadMultipleImages(imageFiles);
+                else {
+                    const oldDoc = await getDoc(doc(db, "products", editingId));
+                    images = oldDoc.data()?.images || [];
+                }
+                await updateDoc(doc(db, "products", editingId), { name, description: desc, price, images, updatedAt: new Date() });
                 showMessage('Product updated', 'success');
             } else {
-                if (!imgFile) { showMessage('Select an image', 'warning'); return; }
-                imgUrl = await uploadToImgBB(imgFile);
-                await addDoc(collection(db, "products"), { name, description: desc, price, imageUrl: imgUrl, createdAt: new Date() });
+                if (!imageFiles.length) { showMessage('Select at least one image', 'warning'); return; }
+                images = await uploadMultipleImages(imageFiles);
+                await addDoc(collection(db, "products"), { name, description: desc, price, images, createdAt: new Date() });
                 showMessage('Product added', 'success');
             }
             resetEdit(); await fetchProducts(); if (userRole === 'admin') await fetchUsers();
         } catch (err) { showMessage('Upload error: ' + err.message, 'error'); } finally { hideLoader(); }
     };
     dom.cancelEdit.onclick = resetEdit;
-
     async function fetchUsers() {
         if (!dom.userTable) return;
         try {
             const snap = await getDocs(collection(db, "users"));
             let html = `<tr><th class="text-left text-amber-400">Name</th><th class="text-left text-amber-400">Email</th><th class="text-left text-amber-400">Role</th></tr>`;
-            snap.forEach(d => { const data = d.data(); html += `<tr><td class="py-1 text-white">${escapeHtml(data.firstName || '')} ${escapeHtml(data.lastName || '')}</td><td class="text-white">${escapeHtml(data.email)}</td><td class="text-white">${escapeHtml(data.role || 'user')}</td>`; });
+            snap.forEach(d => { const data = d.data(); html += `<tr><td class="py-1 text-white">${escapeHtml(data.firstName || '')} ${escapeHtml(data.lastName || '')}</td><td class="text-white">${escapeHtml(data.email)}</td><td class="text-white">${escapeHtml(data.role || 'user')}</tr>`; });
             dom.userTable.innerHTML = html;
-            if (dom.perfStats) dom.perfStats.innerHTML = `<div class="p-3"><p class="font-semibold text-amber-400">📊 Site Performance</p><p class="text-white">👥 Users: ${snap.size}</p><p class="text-white">⌚ Products: ${products.length}</p><p class="text-white">🛒 Cart: ${cart.reduce((a, b) => a + b.quantity, 0)}</p></div>`;
-        } catch (e) { console.warn(e); }
+            if (dom.perfStats) dom.perfStats.innerHTML = `<div class="p-3"><p class="font-semibold text-amber-400">📊 Site Performance</p><p class="text-white">👥 Users: ${snap.size}</p><p class="text-white">⌚ Products: ${allProducts.length}</p><p class="text-white">🛒 Cart: ${cart.reduce((a,b)=>a+b.quantity,0)}</p></div>`;
+        } catch(e) { console.warn(e); }
     }
 
-    // ----------------------------- Auth -----------------------------
-    async function register(email, pwd, first, last) {
-        showLoader();
-        try {
-            const cred = await createUserWithEmailAndPassword(auth, email, pwd);
-            const role = email === 'admin@rollingwatch.com' ? 'admin' : 'user';
-            await setDoc(doc(db, "users", cred.user.uid), { firstName: first, lastName: last, email, role, createdAt: new Date() });
-            showMessage(`Welcome ${first}!`, 'success');
-            closeModal(dom.regModal);
-        } catch (err) { showMessage(getFriendlyError(err.code), 'error'); } finally { hideLoader(); }
-    }
-    async function login(email, pwd) {
-        showLoader();
-        try { await signInWithEmailAndPassword(auth, email, pwd); showMessage('Login success', 'success'); closeModal(dom.loginModal); }
-        catch (err) { showMessage(getFriendlyError(err.code), 'error'); } finally { hideLoader(); }
-    }
-    function logout() { signOut(auth); showMessage('Logged out', 'info'); }
+    // Auth
+    async function register(email, pwd, first, last) { showLoader(); try { const cred = await createUserWithEmailAndPassword(auth, email, pwd); const role = email === 'admin@rollingwatch.com' ? 'admin' : 'user'; await setDoc(doc(db, "users", cred.user.uid), { firstName: first, lastName: last, email, role, createdAt: new Date() }); showMessage(`Welcome ${first}!`, 'success'); closeModal(dom.regModal); } catch(err) { showMessage(getFriendlyError(err.code), 'error'); } finally { hideLoader(); } }
+    async function login(email, pwd) { showLoader(); try { await signInWithEmailAndPassword(auth, email, pwd); showMessage('Login success', 'success'); closeModal(dom.loginModal); } catch(err) { showMessage(getFriendlyError(err.code), 'error'); } finally { hideLoader(); } }
+    function logout() { signOut(auth); showMessage('Logged out', 'info'); showHome(); }
 
-    // ----------------------------- Navigation & UI -----------------------------
+    // Navigation
     function showHome() { dom.homeSec.classList.remove('hidden'); dom.userSec.classList.add('hidden'); dom.adminSec.classList.add('hidden'); fetchProducts(); }
     function showUser() { if (!currentUser) { showMessage('Please login first', 'warning'); return; } dom.homeSec.classList.add('hidden'); dom.adminSec.classList.add('hidden'); dom.userSec.classList.remove('hidden'); loadProfile(); }
     function showAdmin() { if (userRole !== 'admin') { showMessage('Admin only', 'error'); return; } dom.homeSec.classList.add('hidden'); dom.userSec.classList.add('hidden'); dom.adminSec.classList.remove('hidden'); fetchProducts(); fetchUsers(); }
     async function loadProfile() {
         if (!currentUser) return;
-        try {
-            const snap = await getDoc(doc(db, "users", currentUser.uid));
-            if (snap.exists()) { const d = snap.data(); dom.userInfo.innerHTML = `<div class="p-4 bg-black/40 rounded-xl"><strong class="text-amber-400">${escapeHtml(d.firstName)} ${escapeHtml(d.lastName)}</strong><br>${escapeHtml(d.email)}<br>Role: ${escapeHtml(d.role)}</div>`; dom.contactSpan.innerText = d.email; }
-            else { dom.userInfo.innerHTML = '<p>Profile error</p>'; dom.contactSpan.innerText = currentUser.email; }
-        } catch (e) { showMessage('Profile load error', 'error'); }
+        try { const snap = await getDoc(doc(db, "users", currentUser.uid)); if (snap.exists()) { const d = snap.data(); dom.userInfo.innerHTML = `<div class="p-4 bg-black/40 rounded-xl"><strong class="text-amber-400">${escapeHtml(d.firstName)} ${escapeHtml(d.lastName)}</strong><br>${escapeHtml(d.email)}<br>Role: ${escapeHtml(d.role)}</div>`; dom.contactSpan.innerText = d.email; } else { dom.userInfo.innerHTML = '<p>Profile error</p>'; dom.contactSpan.innerText = currentUser.email; } } catch(e) { showMessage('Profile load error', 'error'); }
     }
     function updateNav() {
         const logged = !!currentUser;
@@ -393,16 +440,14 @@
     }
     onAuthStateChanged(auth, async (user) => {
         currentUser = user;
-        if (user) {
-            try { const snap = await getDoc(doc(db, "users", user.uid)); userRole = snap.exists() ? snap.data().role : (user.email === 'admin@rollingwatch.com' ? 'admin' : 'user'); }
-            catch (e) { userRole = 'user'; }
-        } else { userRole = 'guest'; }
+        if (user) { try { const snap = await getDoc(doc(db, "users", user.uid)); userRole = snap.exists() ? snap.data().role : (user.email === 'admin@rollingwatch.com' ? 'admin' : 'user'); } catch(e) { userRole = 'user'; } } else { userRole = 'guest'; }
         updateNav();
         if (userRole === 'admin') dom.adminNav.classList.remove('hidden');
         if (currentUser && !dom.userSec.classList.contains('hidden')) loadProfile();
+        fetchProducts(); // reload on auth change
     });
 
-    // ----------------------------- Event Binding (conflict‑free) -----------------------------
+    // Event binding
     const openModal = (m) => m.classList.remove('hidden');
     const closeModal = (m) => m.classList.add('hidden');
     dom.homeNav.onclick = showHome;
@@ -416,9 +461,14 @@
     dom.cartBtn.onclick = () => { dom.cartSidebar.classList.remove('translate-x-full'); dom.cartOverlay.classList.remove('hidden'); };
     dom.closeCart.onclick = () => { dom.cartSidebar.classList.add('translate-x-full'); dom.cartOverlay.classList.add('hidden'); };
     dom.cartOverlay.onclick = () => { dom.cartSidebar.classList.add('translate-x-full'); dom.cartOverlay.classList.add('hidden'); };
-    dom.regForm.onsubmit = (e) => { e.preventDefault(); const p = document.getElementById('regPassword').value, cp = document.getElementById('regConfirmPassword').value; if (p !== cp) { showMessage('Passwords mismatch', 'warning'); return; } register(document.getElementById('regEmail').value, p, document.getElementById('regFirstName').value, document.getElementById('regLastName').value); };
+    dom.regForm.onsubmit = (e) => { e.preventDefault(); const pwd = document.getElementById('regPassword').value, cp = document.getElementById('regConfirmPassword').value; if (pwd !== cp) { showMessage('Passwords mismatch', 'warning'); return; } register(document.getElementById('regEmail').value, pwd, document.getElementById('regFirstName').value, document.getElementById('regLastName').value); };
     dom.loginForm.onsubmit = (e) => { e.preventDefault(); login(document.getElementById('loginEmail').value, document.getElementById('loginPassword').value); };
-    dom.socialContainer.innerHTML = `<a href="https://facebook.com/rollingwatch" target="_blank" class="text-blue-400 hover:text-blue-300 text-2xl"><i class="fab fa-facebook"></i></a> <a href="https://instagram.com/rollingwatch" target="_blank" class="text-pink-400 hover:text-pink-300 text-2xl"><i class="fab fa-instagram"></i></a> <a href="https://twitter.com/rollingwatch" target="_blank" class="text-sky-400 hover:text-sky-300 text-2xl"><i class="fab fa-twitter"></i></a>`;
+    dom.socialContainer.innerHTML = `<a href="https://facebook.com/rollingwatch" target="_blank" class="text-blue-400 hover:text-blue-300 text-2xl"><i class="fab fa-facebook"></i></a><a href="https://instagram.com/rollingwatch" target="_blank" class="text-pink-400 hover:text-pink-300 text-2xl"><i class="fab fa-instagram"></i></a><a href="https://twitter.com/rollingwatch" target="_blank" class="text-sky-400 hover:text-sky-300 text-2xl"><i class="fab fa-twitter"></i></a>`;
+    dom.searchInput.addEventListener('input', () => applyFiltersAndRender());
+    dom.sortSelect.addEventListener('change', () => applyFiltersAndRender());
+    dom.minPrice.addEventListener('input', () => applyFiltersAndRender());
+    dom.maxPrice.addEventListener('input', () => applyFiltersAndRender());
+    dom.resetFiltersBtn.onclick = () => { dom.searchInput.value = ''; dom.sortSelect.value = 'default'; dom.minPrice.value = ''; dom.maxPrice.value = ''; applyFiltersAndRender(); };
     document.getElementById('heroShopBtn')?.addEventListener('click', () => document.getElementById('productsGrid')?.scrollIntoView({ behavior: 'smooth' }));
     document.getElementById('heroExploreBtn')?.addEventListener('click', () => document.getElementById('productsGrid')?.scrollIntoView({ behavior: 'smooth' }));
 
