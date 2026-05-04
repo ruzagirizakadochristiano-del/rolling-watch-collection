@@ -7,12 +7,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* Custom luxury background - high-end watch texture */
         body {
             background: #0a0a0a url('https://images.pexels.com/photos/190819/pexels-photo-190819.jpeg?auto=compress&cs=tinysrgb&w=1600') fixed center/cover no-repeat;
             background-attachment: fixed;
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            position: relative;
+            font-family: 'Inter', system-ui, sans-serif;
         }
         body::before {
             content: '';
@@ -24,64 +22,34 @@
             background: rgba(0,0,0,0.7);
             z-index: -1;
         }
-        /* Hero section with Rolex-inspired gradient and gold overlay */
         .hero-bg {
             background: linear-gradient(135deg, rgba(0,0,0,0.85) 0%, rgba(26,26,46,0.9) 100%);
-            position: relative;
             backdrop-filter: blur(2px);
             border-bottom: 2px solid #d4af37;
-        }
-        .hero-bg::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: linear-gradient(90deg, #d4af37, #f9e79f, #d4af37);
         }
         .product-card {
             background: rgba(255,255,255,0.95);
             backdrop-filter: blur(2px);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s;
             border: 1px solid rgba(212,175,55,0.2);
         }
         .product-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 25px 35px -12px rgba(0,0,0,0.3);
             border-color: rgba(212,175,55,0.6);
+            box-shadow: 0 25px 35px -12px rgba(0,0,0,0.3);
         }
-        .gold-text {
-            background: linear-gradient(135deg, #e6c27a, #d4af37, #b8860b);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
-        }
-        .btn-gold {
-            background: linear-gradient(135deg, #d4af37, #b8860b);
-            transition: all 0.2s;
-        }
-        .btn-gold:hover {
-            transform: scale(1.02);
-            background: linear-gradient(135deg, #e6c27a, #d4af37);
-        }
-        .cart-sidebar {
-            background: rgba(255,255,255,0.98);
-            backdrop-filter: blur(10px);
-        }
-        input, textarea {
-            background: rgba(255,255,255,0.95);
-            border: 1px solid #d4af37aa;
-        }
-        input:focus, textarea:focus {
-            border-color: #d4af37;
-            box-shadow: 0 0 0 3px rgba(212,175,55,0.3);
-        }
-        .rolex-badge {
-            font-family: 'Times New Roman', serif;
-            letter-spacing: 2px;
-        }
+        .gold-text { background: linear-gradient(135deg, #e6c27a, #d4af37, #b8860b); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .btn-gold { background: linear-gradient(135deg, #d4af37, #b8860b); transition: all 0.2s; }
+        .btn-gold:hover { transform: scale(1.02); background: linear-gradient(135deg, #e6c27a, #d4af37); }
+        /* Notifications & loader (same as before) */
+        .notification { position: fixed; top: 85px; right: 20px; z-index: 10000; min-width: 260px; max-width: 360px; padding: 12px 18px; border-radius: 12px; background: rgba(0,0,0,0.9); backdrop-filter: blur(8px); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5); transform: translateX(120%); transition: transform 0.25s ease-out; display: flex; align-items: center; gap: 12px; border-left: 5px solid; color: white; }
+        .notification.show { transform: translateX(0); }
+        .notification-success { border-left-color: #10b981; }
+        .notification-error { border-left-color: #ef4444; }
+        .loader-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:10001; display:flex; justify-content:center; align-items:center; visibility:hidden; opacity:0; transition:all 0.2s; }
+        .loader-overlay.active { visibility:visible; opacity:1; }
+        .spinner { width:50px; height:50px; border:4px solid rgba(255,255,255,0.3); border-top:4px solid #d4af37; border-radius:50%; animation:spin 0.8s linear infinite; }
+        @keyframes spin { 100% { transform:rotate(360deg); } }
     </style>
 </head>
 <body>
@@ -89,13 +57,13 @@
 <div id="notificationContainer"></div>
 <div id="globalLoader" class="loader-overlay"><div class="spinner"></div></div>
 
-<!-- Navbar with luxury feel -->
+<!-- Navbar -->
 <nav class="bg-black/80 backdrop-blur-md text-white px-6 py-4 flex justify-between items-center shadow-xl sticky top-0 z-30 border-b border-amber-700/40">
     <div class="text-2xl font-bold tracking-wider"><i class="fas fa-crown text-amber-500 mr-2"></i>ROLLING WATCH <span class="gold-text">COLLECTION</span></div>
     <div class="flex gap-5 items-center">
-        <button id="homeNavBtn" class="hover:text-amber-400 transition font-medium">Home</button>
-        <button id="userPanelNavBtn" class="hover:text-amber-400 hidden transition">My Panel</button>
-        <button id="adminPanelNavBtn" class="hover:text-amber-400 hidden transition">Admin</button>
+        <button class="nav-btn hover:text-amber-400 font-medium" data-nav="home">Home</button>
+        <button class="nav-btn hover:text-amber-400 hidden" data-nav="user">My Panel</button>
+        <button class="nav-btn hover:text-amber-400 hidden" data-nav="admin">Admin</button>
         <button id="cartIconBtn" class="relative hover:text-amber-400 transition">
             <i class="fas fa-shopping-cart text-xl"></i>
             <span id="cartCount" class="absolute -top-2 -right-3 bg-amber-500 text-black text-xs font-bold rounded-full px-1.5 min-w-[20px] text-center">0</span>
@@ -106,20 +74,20 @@
     </div>
 </nav>
 
-<!-- Hero Section with Rolex tribute -->
+<!-- Hero -->
 <section class="hero-bg text-white py-24 md:py-32">
     <div class="max-w-7xl mx-auto px-6 text-center">
-        <div class="inline-block mb-4 px-4 py-1 border border-amber-500/50 rounded-full text-sm uppercase tracking-wider rolex-badge">Since 2025</div>
+        <div class="inline-block mb-4 px-4 py-1 border border-amber-500/50 rounded-full text-sm uppercase tracking-wider">Since 2025</div>
         <h1 class="text-5xl md:text-7xl font-bold mb-4">Timeless <span class="gold-text">Elegance</span></h1>
-        <p class="text-xl md:text-2xl text-gray-200 max-w-2xl mx-auto">Inspired by the precision of Rolex, designed for the discerning.</p>
+        <p class="text-xl md:text-2xl text-gray-200 max-w-2xl mx-auto">Inspired by luxury, crafted for eternity.</p>
         <div class="mt-10 flex justify-center gap-5">
-            <button id="heroShopBtn" class="btn-gold text-black px-8 py-3 rounded-full font-semibold text-lg shadow-xl transition">Explore Collection</button>
-            <button id="heroExploreBtn" class="border border-white/40 hover:bg-white/10 px-8 py-3 rounded-full font-semibold text-lg transition">Discover Craftsmanship</button>
+            <button id="heroShopBtn" class="btn-gold text-black px-8 py-3 rounded-full font-semibold text-lg shadow-xl">Explore Collection</button>
+            <button id="heroExploreBtn" class="border border-white/40 hover:bg-white/10 px-8 py-3 rounded-full font-semibold text-lg">Discover Craftsmanship</button>
         </div>
     </div>
 </section>
 
-<!-- Home Section (Product Grid) with semi-transparent background -->
+<!-- Home (Product Grid) -->
 <section id="home-section" class="max-w-7xl mx-auto px-4 py-16">
     <div class="text-center mb-12">
         <h2 class="text-4xl font-bold text-white">Our <span class="gold-text">Collection</span></h2>
@@ -129,7 +97,7 @@
     <div id="productsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"></div>
 </section>
 
-<!-- User Panel (same structure, dark adapted) -->
+<!-- User Panel -->
 <section id="user-panel-section" class="max-w-4xl mx-auto px-4 py-12 hidden">
     <div class="bg-black/70 backdrop-blur-md rounded-2xl shadow-2xl p-6 border border-amber-500/30 text-white">
         <h2 class="text-2xl font-bold border-b border-amber-500/40 pb-2 mb-4"><i class="fas fa-id-card text-amber-500 mr-2"></i>My Dashboard</h2>
@@ -142,12 +110,12 @@
     </div>
 </section>
 
-<!-- Admin Panel (same functionality, dark theme) -->
+<!-- Admin Panel -->
 <section id="admin-panel-section" class="max-w-6xl mx-auto px-4 py-12 hidden">
     <div class="bg-black/80 backdrop-blur-md rounded-2xl shadow-2xl p-6 mb-8 border border-amber-500/30 text-white">
         <h2 class="text-2xl font-bold text-amber-400">🛠️ Product Management</h2>
         <form id="productForm" class="grid md:grid-cols-2 gap-4 mt-5">
-            <input type="text" id="productName" placeholder="Watch name" class="bg-gray-900 text-white border border-amber-500/50 p-2 rounded-lg focus:ring-2 focus:ring-amber-300" required>
+            <input type="text" id="productName" placeholder="Watch name" class="bg-gray-900 text-white border border-amber-500/50 p-2 rounded-lg" required>
             <input type="number" step="0.01" id="productPrice" placeholder="Price (USD)" class="bg-gray-900 text-white border border-amber-500/50 p-2 rounded-lg" required>
             <textarea id="productDesc" placeholder="Description" class="bg-gray-900 text-white border border-amber-500/50 p-2 rounded-lg md:col-span-2"></textarea>
             <input type="file" id="productImage" accept="image/*" class="bg-gray-900 text-white border border-amber-500/50 p-1 rounded-lg">
@@ -159,29 +127,29 @@
         <div class="mt-8"><h3 class="font-bold text-xl text-amber-400">📋 Inventory</h3><div id="productListAdmin" class="mt-2 space-y-2 text-white"></div></div>
     </div>
     <div class="grid md:grid-cols-2 gap-6">
-        <div class="bg-black/70 backdrop-blur-md p-5 rounded-2xl shadow border border-amber-500/20 text-white"><h3 class="text-xl font-bold mb-3 text-amber-400">👥 Registered Users</h3><div class="overflow-auto max-h-72"><table id="userListAdmin" class="w-full text-sm"></tr></div></div>
+        <div class="bg-black/70 backdrop-blur-md p-5 rounded-2xl shadow border border-amber-500/20 text-white"><h3 class="text-xl font-bold mb-3 text-amber-400">👥 Registered Users</h3><div class="overflow-auto max-h-72"><table id="userListAdmin" class="w-full text-sm"></table></div></div>
         <div id="performanceStats" class="bg-black/70 backdrop-blur-md p-5 rounded-2xl shadow border border-amber-500/20 text-white"></div>
     </div>
 </section>
 
-<!-- Cart Sidebar (dark style) -->
+<!-- Cart Sidebar -->
 <div id="cartOverlay" class="fixed inset-0 bg-black/80 z-40 hidden"></div>
 <div id="cartSidebar" class="fixed top-0 right-0 w-96 h-full bg-black/90 backdrop-blur-xl shadow-2xl z-50 transform translate-x-full transition-transform duration-300 flex flex-col border-l border-amber-500/30">
     <div class="flex justify-between items-center p-5 border-b border-amber-500/30"><h2 class="text-2xl font-bold text-amber-400"><i class="fas fa-shopping-bag mr-2"></i>Your Cart</h2><button id="closeCart" class="text-3xl text-gray-400 hover:text-amber-400">&times;</button></div>
     <div id="cartItems" class="flex-1 overflow-y-auto p-4 text-white"></div>
-    <div class="border-t border-amber-500/30 p-5 bg-black/50"><div class="flex justify-between text-xl font-bold text-white">Total: $<span id="cartTotal" class="text-amber-400">0.00</span></div><button class="w-full btn-gold text-black py-3 mt-4 rounded-full font-semibold shadow transition">Secure Checkout</button></div>
+    <div class="border-t border-amber-500/30 p-5 bg-black/50"><div class="flex justify-between text-xl font-bold text-white">Total: $<span id="cartTotal" class="text-amber-400">0.00</span></div><button class="w-full btn-gold text-black py-3 mt-4 rounded-full font-semibold">Secure Checkout</button></div>
 </div>
 
-<!-- Modals (dark luxury) -->
+<!-- Modals -->
 <div id="registerModal" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 hidden">
-    <div class="bg-gradient-to-br from-gray-900 to-black rounded-2xl max-w-md w-full p-6 relative border border-amber-500/30 shadow-2xl"><button id="closeRegModal" class="absolute top-3 right-4 text-2xl text-gray-400 hover:text-amber-400">&times;</button><h3 class="text-2xl font-bold text-amber-400 mb-4">Create Account</h3><form id="regForm"><input type="text" id="regFirstName" placeholder="First Name" class="w-full bg-gray-800 text-white border border-amber-500/50 p-2 mb-3 rounded-lg" required><input type="text" id="regLastName" placeholder="Last Name" class="w-full bg-gray-800 text-white border border-amber-500/50 p-2 mb-3 rounded-lg" required><input type="email" id="regEmail" placeholder="Email" class="w-full bg-gray-800 text-white border border-amber-500/50 p-2 mb-3 rounded-lg" required><input type="password" id="regPassword" placeholder="Password (min 6 chars)" class="w-full bg-gray-800 text-white border border-amber-500/50 p-2 mb-3 rounded-lg" required><input type="password" id="regConfirmPassword" placeholder="Confirm Password" class="w-full bg-gray-800 text-white border border-amber-500/50 p-2 mb-4 rounded-lg" required><button type="submit" class="w-full btn-gold text-black py-2 rounded-full font-semibold">Register</button></form></div>
+    <div class="bg-gradient-to-br from-gray-900 to-black rounded-2xl max-w-md w-full p-6 relative border border-amber-500/30"><button id="closeRegModal" class="absolute top-3 right-4 text-2xl text-gray-400 hover:text-amber-400">&times;</button><h3 class="text-2xl font-bold text-amber-400 mb-4">Create Account</h3><form id="regForm"><input type="text" id="regFirstName" placeholder="First Name" class="w-full bg-gray-800 text-white border border-amber-500/50 p-2 mb-3 rounded-lg" required><input type="text" id="regLastName" placeholder="Last Name" class="w-full bg-gray-800 text-white border border-amber-500/50 p-2 mb-3 rounded-lg" required><input type="email" id="regEmail" placeholder="Email" class="w-full bg-gray-800 text-white border border-amber-500/50 p-2 mb-3 rounded-lg" required><input type="password" id="regPassword" placeholder="Password (min 6 chars)" class="w-full bg-gray-800 text-white border border-amber-500/50 p-2 mb-3 rounded-lg" required><input type="password" id="regConfirmPassword" placeholder="Confirm Password" class="w-full bg-gray-800 text-white border border-amber-500/50 p-2 mb-4 rounded-lg" required><button type="submit" class="w-full btn-gold text-black py-2 rounded-full font-semibold">Register</button></form></div>
 </div>
 <div id="loginModal" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 hidden">
     <div class="bg-gradient-to-br from-gray-900 to-black rounded-2xl max-w-md w-full p-6 relative border border-amber-500/30"><button id="closeLoginModal" class="absolute top-3 right-4 text-2xl text-gray-400 hover:text-amber-400">&times;</button><h3 class="text-2xl font-bold text-amber-400 mb-4">Welcome Back</h3><form id="loginForm"><input type="email" id="loginEmail" placeholder="Email" class="w-full bg-gray-800 text-white border border-amber-500/50 p-2 mb-3 rounded-lg" required><input type="password" id="loginPassword" placeholder="Password" class="w-full bg-gray-800 text-white border border-amber-500/50 p-2 mb-4 rounded-lg" required><button type="submit" class="w-full btn-gold text-black py-2 rounded-full font-semibold">Login</button><p class="text-xs text-center mt-3 text-gray-400">Admin: admin@rollingwatch.com</p></form></div>
 </div>
 
 <script type="module">
-    // 🔥 FIREBASE CONFIG (Replace with your real credentials)
+    // ----------------------------- FIREBASE CONFIG (replace with your own) -----------------------------
     const firebaseConfig = {
         apiKey: "AIzaSyDZxBIpI6QdN1MjK3t1N_m4BVfEEoI_SGY",
         authDomain: "rolling-watch-collection.firebaseapp.com",
@@ -200,279 +168,263 @@
     const db = getFirestore(app);
     const IMGBB_API_KEY = "4fa8b99e2ba50cfe70cc9f69257055bb";
 
-    // ----- UI Helpers (unchanged) -----
+    // ----------------------------- Helper functions -----------------------------
     const loader = document.getElementById('globalLoader');
-    function showLoader() { loader.classList.add('active'); }
-    function hideLoader() { loader.classList.remove('active'); }
-    function showMessage(msg, type='info') {
+    const showLoader = () => loader.classList.add('active');
+    const hideLoader = () => loader.classList.remove('active');
+
+    function showMessage(msg, type = 'info') {
         const container = document.getElementById('notificationContainer');
-        if(!container) return;
-        const id = 'msg_'+Date.now()+'_'+Math.random().toString(36).substr(2,5);
-        const icons = { success:'✓', error:'✗', warning:'⚠', info:'ℹ' };
+        if (!container) return;
+        const id = 'msg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+        const icons = { success: '✓', error: '✗', warning: '⚠', info: 'ℹ' };
         const notif = document.createElement('div');
         notif.id = id;
         notif.className = `notification notification-${type}`;
-        notif.innerHTML = `<i>${icons[type]||'ℹ'}</i><span>${escapeHtml(msg)}</span>`;
+        notif.innerHTML = `<i>${icons[type] || 'ℹ'}</i><span>${escapeHtml(msg)}</span>`;
         container.appendChild(notif);
         setTimeout(() => notif.classList.add('show'), 10);
         setTimeout(() => { notif.classList.remove('show'); setTimeout(() => notif.remove(), 300); }, 3200);
     }
-    function escapeHtml(s) { if(!s) return ''; return s.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m])); }
+    function escapeHtml(s) { if (!s) return ''; return s.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
     function getFriendlyError(code) {
         const map = {
-            'auth/email-already-in-use':'Email already registered.',
-            'auth/invalid-email':'Invalid email.',
-            'auth/weak-password':'Password must be 6+ chars.',
-            'auth/wrong-password':'Incorrect password.',
-            'auth/user-not-found':'No account. Register first.',
-            'auth/too-many-requests':'Too many attempts. Try later.'
+            'auth/email-already-in-use': 'Email already registered.',
+            'auth/invalid-email': 'Invalid email.',
+            'auth/weak-password': 'Password must be 6+ chars.',
+            'auth/wrong-password': 'Incorrect password.',
+            'auth/user-not-found': 'No account. Register first.',
+            'auth/too-many-requests': 'Too many attempts. Try later.'
         };
         return map[code] || `Error: ${code}`;
     }
 
-    // DOM references (all IDs unchanged)
-    const homeSec = document.getElementById('home-section');
-    const userSec = document.getElementById('user-panel-section');
-    const adminSec = document.getElementById('admin-panel-section');
-    const regBtn = document.getElementById('registerBtn'), loginBtn = document.getElementById('loginBtn'), logoutBtn = document.getElementById('logoutBtn');
-    const userNav = document.getElementById('userPanelNavBtn'), adminNav = document.getElementById('adminPanelNavBtn'), homeNav = document.getElementById('homeNavBtn');
-    const cartBtn = document.getElementById('cartIconBtn'), cartSide = document.getElementById('cartSidebar'), closeCart = document.getElementById('closeCart'), cartOver = document.getElementById('cartOverlay');
-    const cartItemsDiv = document.getElementById('cartItems'), cartTotal = document.getElementById('cartTotal'), cartCountSpan = document.getElementById('cartCount');
-    const regModal = document.getElementById('registerModal'), loginModal = document.getElementById('loginModal');
-    const closeReg = document.getElementById('closeRegModal'), closeLogin = document.getElementById('closeLoginModal');
-    const regForm = document.getElementById('regForm'), loginForm = document.getElementById('loginForm');
-    const productForm = document.getElementById('productForm'), productList = document.getElementById('productListAdmin');
-    const userTable = document.getElementById('userListAdmin'), perfStats = document.getElementById('performanceStats');
-    const cancelBtn = document.getElementById('cancelEdit'), userInfoDiv = document.getElementById('userInfoDisplay'), contactSpan = document.getElementById('contactEmailSpan');
-    const socialDiv = document.getElementById('socialLinksContainer');
+    // ----------------------------- DOM Elements (single cache) -----------------------------
+    const dom = {
+        homeSec: document.getElementById('home-section'),
+        userSec: document.getElementById('user-panel-section'),
+        adminSec: document.getElementById('admin-panel-section'),
+        registerBtn: document.getElementById('registerBtn'),
+        loginBtn: document.getElementById('loginBtn'),
+        logoutBtn: document.getElementById('logoutBtn'),
+        userNav: document.querySelector('[data-nav="user"]'),
+        adminNav: document.querySelector('[data-nav="admin"]'),
+        homeNav: document.querySelector('[data-nav="home"]'),
+        cartBtn: document.getElementById('cartIconBtn'),
+        cartSidebar: document.getElementById('cartSidebar'),
+        closeCart: document.getElementById('closeCart'),
+        cartOverlay: document.getElementById('cartOverlay'),
+        cartItemsDiv: document.getElementById('cartItems'),
+        cartTotal: document.getElementById('cartTotal'),
+        cartCount: document.getElementById('cartCount'),
+        regModal: document.getElementById('registerModal'),
+        loginModal: document.getElementById('loginModal'),
+        closeReg: document.getElementById('closeRegModal'),
+        closeLogin: document.getElementById('closeLoginModal'),
+        regForm: document.getElementById('regForm'),
+        loginForm: document.getElementById('loginForm'),
+        productForm: document.getElementById('productForm'),
+        productList: document.getElementById('productListAdmin'),
+        userTable: document.getElementById('userListAdmin'),
+        perfStats: document.getElementById('performanceStats'),
+        cancelEdit: document.getElementById('cancelEdit'),
+        userInfo: document.getElementById('userInfoDisplay'),
+        contactSpan: document.getElementById('contactEmailSpan'),
+        socialContainer: document.getElementById('socialLinksContainer'),
+        productName: document.getElementById('productName'),
+        productPrice: document.getElementById('productPrice'),
+        productDesc: document.getElementById('productDesc'),
+        productImage: document.getElementById('productImage'),
+        productFormTitle: document.getElementById('productFormTitle')
+    };
+
     let currentUser = null, userRole = 'guest', products = [], cart = [], editingId = null;
 
-    // ----- Cart (identical logic) -----
+    // ----------------------------- Cart -----------------------------
     function saveCart() { localStorage.setItem('rollingWatchCart', JSON.stringify(cart)); updateCartUI(); }
-    function loadCart() { const s = localStorage.getItem('rollingWatchCart'); cart = s ? JSON.parse(s) : []; updateCartUI(); }
+    function loadCart() { cart = JSON.parse(localStorage.getItem('rollingWatchCart') || '[]'); updateCartUI(); }
     function updateCartUI() {
-        let total=0, count=0;
-        cartItemsDiv.innerHTML = '';
-        if(!cart.length) cartItemsDiv.innerHTML = '<div class="text-center py-6 text-gray-400">Cart empty</div>';
-        else cart.forEach((item,idx) => {
+        let total = 0, count = 0;
+        dom.cartItemsDiv.innerHTML = '';
+        if (!cart.length) dom.cartItemsDiv.innerHTML = '<div class="text-center py-6 text-gray-400">Cart empty</div>';
+        else cart.forEach((item, idx) => {
             total += item.price * item.quantity;
             count += item.quantity;
             const div = document.createElement('div');
             div.className = 'flex gap-3 border-b border-gray-700 pb-3 mb-3 text-white';
-            div.innerHTML = `<img src="${item.imageUrl||'https://via.placeholder.com/60'}" class="w-14 h-14 object-cover rounded"><div class="flex-1"><b>${escapeHtml(item.name)}</b><br>$${item.price}<div class="flex gap-2 mt-1"><button class="cart-dec bg-gray-700 text-white px-2 rounded" data-idx="${idx}">-</button><span>${item.quantity}</span><button class="cart-inc bg-gray-700 text-white px-2 rounded" data-idx="${idx}">+</button><button class="cart-del text-red-400 ml-1" data-idx="${idx}">🗑</button></div></div><div>$${(item.price*item.quantity).toFixed(2)}</div>`;
-            cartItemsDiv.appendChild(div);
+            div.innerHTML = `<img src="${item.imageUrl || 'https://via.placeholder.com/60'}" class="w-14 h-14 object-cover rounded"><div class="flex-1"><b>${escapeHtml(item.name)}</b><br>$${item.price}<div class="flex gap-2 mt-1"><button class="cart-dec bg-gray-700 px-2 rounded" data-idx="${idx}">-</button><span>${item.quantity}</span><button class="cart-inc bg-gray-700 px-2 rounded" data-idx="${idx}">+</button><button class="cart-del text-red-400 ml-1" data-idx="${idx}">🗑</button></div></div><div>$${(item.price * item.quantity).toFixed(2)}</div>`;
+            dom.cartItemsDiv.appendChild(div);
         });
-        cartTotal.innerText = total.toFixed(2);
-        cartCountSpan.innerText = count;
-        document.querySelectorAll('.cart-dec').forEach(btn => btn.onclick = () => { let i=btn.dataset.idx; if(cart[i].quantity>1) cart[i].quantity--; else cart.splice(i,1); saveCart(); renderProducts(); });
-        document.querySelectorAll('.cart-inc').forEach(btn => btn.onclick = () => { let i=btn.dataset.idx; cart[i].quantity++; saveCart(); renderProducts(); });
-        document.querySelectorAll('.cart-del').forEach(btn => btn.onclick = () => { cart.splice(btn.dataset.idx,1); saveCart(); renderProducts(); });
+        dom.cartTotal.innerText = total.toFixed(2);
+        dom.cartCount.innerText = count;
+        // Use event delegation instead of multiple listeners
+        dom.cartItemsDiv.querySelectorAll('.cart-dec').forEach(btn => btn.onclick = () => { let i = btn.dataset.idx; if (cart[i].quantity > 1) cart[i].quantity--; else cart.splice(i, 1); saveCart(); renderProducts(); });
+        dom.cartItemsDiv.querySelectorAll('.cart-inc').forEach(btn => btn.onclick = () => { let i = btn.dataset.idx; cart[i].quantity++; saveCart(); renderProducts(); });
+        dom.cartItemsDiv.querySelectorAll('.cart-del').forEach(btn => btn.onclick = () => { cart.splice(btn.dataset.idx, 1); saveCart(); renderProducts(); });
     }
-    function addToCart(p) { let e = cart.find(i=>i.id===p.id); e ? e.quantity++ : cart.push({...p, quantity:1}); saveCart(); showMessage(`${p.name} added`,'success'); }
+    function addToCart(p) { let e = cart.find(i => i.id === p.id); e ? e.quantity++ : cart.push({ ...p, quantity: 1 }); saveCart(); showMessage(`${p.name} added`, 'success'); }
 
-    // ----- Products (unchanged, including ImgBB) -----
+    // ----------------------------- Products & Admin -----------------------------
     async function fetchProducts() {
         showLoader();
         try {
-            const snap = await getDocs(collection(db,"products"));
-            products = snap.docs.map(d=>({id:d.id,...d.data()}));
+            const snap = await getDocs(collection(db, "products"));
+            products = snap.docs.map(d => ({ id: d.id, ...d.data() }));
             renderProducts();
-            if(userRole==='admin') { await renderAdminList(); await fetchUsers(); }
-        } catch(e) { showMessage('Load products failed','error'); }
-        finally { hideLoader(); }
+            if (userRole === 'admin') { await renderAdminList(); await fetchUsers(); }
+        } catch (e) { showMessage('Load products failed', 'error'); } finally { hideLoader(); }
     }
     function renderProducts() {
         const grid = document.getElementById('productsGrid');
-        if(!products.length) { grid.innerHTML='<div class="text-center py-10 text-gray-300">✨ No watches yet. Admin can add.</div>'; return; }
-        grid.innerHTML = products.map(p=>`<div class="product-card bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl overflow-hidden"><img src="${p.imageUrl||'https://via.placeholder.com/300'}" class="h-56 w-full object-cover"><div class="p-4"><h3 class="font-bold text-xl text-gray-900">${escapeHtml(p.name)}</h3><p class="text-gray-700 text-sm mt-1">${escapeHtml(p.description?.substring(0,80)||'')}</p><div class="flex justify-between items-center mt-4"><span class="text-2xl font-bold text-amber-700">$${p.price}</span><button class="add-cart btn-gold text-black font-semibold px-4 py-2 rounded-full text-sm shadow" data-id="${p.id}"><i class="fas fa-cart-plus mr-1"></i> Add</button></div></div></div>`).join('');
-        document.querySelectorAll('.add-cart').forEach(btn=>btn.onclick=()=>{let prod=products.find(p=>p.id===btn.dataset.id); if(prod) addToCart(prod);});
+        if (!products.length) { grid.innerHTML = '<div class="text-center py-10 text-gray-300">✨ No watches yet. Admin can add.</div>'; return; }
+        grid.innerHTML = products.map(p => `
+            <div class="product-card bg-white/95 rounded-2xl shadow-xl overflow-hidden">
+                <img src="${p.imageUrl || 'https://via.placeholder.com/300'}" class="h-56 w-full object-cover">
+                <div class="p-4"><h3 class="font-bold text-xl text-gray-900">${escapeHtml(p.name)}</h3><p class="text-gray-700 text-sm mt-1">${escapeHtml(p.description?.substring(0, 80) || '')}</p>
+                <div class="flex justify-between items-center mt-4"><span class="text-2xl font-bold text-amber-700">$${p.price}</span><button class="add-cart btn-gold text-black font-semibold px-4 py-2 rounded-full text-sm" data-id="${p.id}"><i class="fas fa-cart-plus mr-1"></i> Add</button></div></div>
+            </div>
+        `).join('');
+        document.querySelectorAll('.add-cart').forEach(btn => btn.onclick = () => { const prod = products.find(p => p.id === btn.dataset.id); if (prod) addToCart(prod); });
     }
     async function renderAdminList() {
-        if(!productList) return;
-        if(!products.length) { productList.innerHTML='<div class="text-gray-400">No products</div>'; return; }
-        productList.innerHTML = products.map(p=>`<div class="flex justify-between items-center border-b border-amber-500/30 py-2"><div class="flex items-center gap-2"><img src="${p.imageUrl||'https://via.placeholder.com/40'}" class="w-8 h-8 object-cover rounded"><span class="text-white"><strong>${escapeHtml(p.name)}</strong> - $${p.price}</span></div><div><button class="edit-prod bg-blue-600 hover:bg-blue-500 text-white px-2 py-1 rounded text-sm mr-1" data-id="${p.id}">Edit</button><button class="del-prod bg-red-600 hover:bg-red-500 text-white px-2 py-1 rounded text-sm" data-id="${p.id}">Del</button></div></div>`).join('');
-        document.querySelectorAll('.edit-prod').forEach(btn=>btn.onclick=()=>openEdit(btn.dataset.id));
-        document.querySelectorAll('.del-prod').forEach(btn=>btn.onclick=async()=>{if(confirm('Delete product?')) await deleteProduct(btn.dataset.id);});
+        if (!dom.productList) return;
+        if (!products.length) { dom.productList.innerHTML = '<div class="text-gray-400">No products</div>'; return; }
+        dom.productList.innerHTML = products.map(p => `
+            <div class="flex justify-between items-center border-b border-amber-500/30 py-2"><div class="flex items-center gap-2"><img src="${p.imageUrl || 'https://via.placeholder.com/40'}" class="w-8 h-8 object-cover rounded"><span><strong>${escapeHtml(p.name)}</strong> - $${p.price}</span></div><div><button class="edit-prod bg-blue-600 hover:bg-blue-500 text-white px-2 py-1 rounded text-sm mr-1" data-id="${p.id}">Edit</button><button class="del-prod bg-red-600 hover:bg-red-500 text-white px-2 py-1 rounded text-sm" data-id="${p.id}">Del</button></div></div>
+        `).join('');
+        dom.productList.querySelectorAll('.edit-prod').forEach(btn => btn.onclick = () => openEdit(btn.dataset.id));
+        dom.productList.querySelectorAll('.del-prod').forEach(btn => btn.onclick = async () => { if (confirm('Delete product?')) await deleteProduct(btn.dataset.id); });
     }
     async function deleteProduct(id) {
         showLoader();
-        try {
-            await deleteDoc(doc(db,"products",id));
-            showMessage('Product deleted','success');
-            await fetchProducts();
-            if(userRole==='admin') await fetchUsers();
-        } catch(e) { showMessage('Delete failed','error'); }
-        finally { hideLoader(); }
+        try { await deleteDoc(doc(db, "products", id)); showMessage('Product deleted', 'success'); await fetchProducts(); if (userRole === 'admin') await fetchUsers(); }
+        catch (e) { showMessage('Delete failed', 'error'); } finally { hideLoader(); }
     }
     async function openEdit(id) {
-        const prod = products.find(p=>p.id===id);
-        if(!prod) return;
+        const prod = products.find(p => p.id === id);
+        if (!prod) return;
         editingId = id;
-        document.getElementById('productName').value = prod.name;
-        document.getElementById('productDesc').value = prod.description||'';
-        document.getElementById('productPrice').value = prod.price;
-        document.getElementById('productFormTitle').innerText = '✏️ Edit Watch';
-        cancelBtn.classList.remove('hidden');
+        dom.productName.value = prod.name;
+        dom.productDesc.value = prod.description || '';
+        dom.productPrice.value = prod.price;
+        dom.productFormTitle.innerText = '✏️ Edit Watch';
+        dom.cancelEdit.classList.remove('hidden');
     }
-    function resetEdit() { editingId=null; productForm.reset(); document.getElementById('productFormTitle').innerText='➕ Add New Watch'; cancelBtn.classList.add('hidden'); document.getElementById('productImage').value=''; }
+    function resetEdit() { editingId = null; dom.productForm.reset(); dom.productFormTitle.innerText = '➕ Add New Watch'; dom.cancelEdit.classList.add('hidden'); dom.productImage.value = ''; }
     async function uploadToImgBB(file) {
-        const formData = new FormData();
-        formData.append('image', file);
-        formData.append('key', IMGBB_API_KEY);
-        const response = await fetch('https://api.imgbb.com/1/upload', { method: 'POST', body: formData });
-        const data = await response.json();
-        if (!data.success) throw new Error('ImgBB upload failed: ' + (data.error?.message || 'Unknown error'));
+        const fd = new FormData(); fd.append('image', file); fd.append('key', IMGBB_API_KEY);
+        const res = await fetch('https://api.imgbb.com/1/upload', { method: 'POST', body: fd });
+        const data = await res.json();
+        if (!data.success) throw new Error('ImgBB upload failed');
         return data.data.url;
     }
-    productForm.onsubmit = async (e) => {
+    dom.productForm.onsubmit = async (e) => {
         e.preventDefault();
-        const name = document.getElementById('productName').value.trim();
-        const desc = document.getElementById('productDesc').value.trim();
-        const price = parseFloat(document.getElementById('productPrice').value);
-        const imgFile = document.getElementById('productImage').files[0];
-        if(!name || isNaN(price)) { showMessage('Name & price required','warning'); return; }
+        const name = dom.productName.value.trim(), desc = dom.productDesc.value.trim(), price = parseFloat(dom.productPrice.value), imgFile = dom.productImage.files[0];
+        if (!name || isNaN(price)) { showMessage('Name & price required', 'warning'); return; }
         showLoader();
         try {
-            let imageUrl = null;
+            let imgUrl = null;
             if (editingId) {
-                const existingRef = doc(db,"products",editingId);
+                const existingRef = doc(db, "products", editingId);
                 const oldData = (await getDoc(existingRef)).data();
-                if (imgFile) imageUrl = await uploadToImgBB(imgFile);
-                else imageUrl = oldData.imageUrl;
-                await updateDoc(existingRef, { name, description: desc, price, imageUrl });
-                showMessage('Product updated','success');
+                if (imgFile) imgUrl = await uploadToImgBB(imgFile); else imgUrl = oldData.imageUrl;
+                await updateDoc(existingRef, { name, description: desc, price, imageUrl: imgUrl });
+                showMessage('Product updated', 'success');
             } else {
-                if (!imgFile) { showMessage('Please select an image','warning'); return; }
-                imageUrl = await uploadToImgBB(imgFile);
-                await addDoc(collection(db,"products"), { name, description: desc, price, imageUrl, createdAt: new Date() });
-                showMessage('Product added','success');
+                if (!imgFile) { showMessage('Select an image', 'warning'); return; }
+                imgUrl = await uploadToImgBB(imgFile);
+                await addDoc(collection(db, "products"), { name, description: desc, price, imageUrl: imgUrl, createdAt: new Date() });
+                showMessage('Product added', 'success');
             }
-            resetEdit();
-            await fetchProducts();
-            if(userRole==='admin') await fetchUsers();
-        } catch(err) { showMessage('Upload error: ' + err.message, 'error'); }
-        finally { hideLoader(); }
+            resetEdit(); await fetchProducts(); if (userRole === 'admin') await fetchUsers();
+        } catch (err) { showMessage('Upload error: ' + err.message, 'error'); } finally { hideLoader(); }
     };
-    cancelBtn.onclick = resetEdit;
+    dom.cancelEdit.onclick = resetEdit;
+
     async function fetchUsers() {
-        if(!userTable) return;
+        if (!dom.userTable) return;
         try {
-            const snap = await getDocs(collection(db,"users"));
+            const snap = await getDocs(collection(db, "users"));
             let html = `<tr><th class="text-left text-amber-400">Name</th><th class="text-left text-amber-400">Email</th><th class="text-left text-amber-400">Role</th></tr>`;
-            snap.forEach(d=>{ const data=d.data(); html+=`<tr><td class="py-1 text-white">${escapeHtml(data.firstName||'')} ${escapeHtml(data.lastName||'')}</td><td class="text-white">${escapeHtml(data.email)}</td><td class="text-white">${escapeHtml(data.role||'user')}</td>`; });
-            userTable.innerHTML = html;
-            if(perfStats) perfStats.innerHTML = `<div class="p-3"><p class="font-semibold text-amber-400">📊 Site Performance</p><p class="text-white">👥 Registered Users: ${snap.size}</p><p class="text-white">⌚ Total Products: ${products.length}</p><p class="text-white">🛒 Cart Items: ${cart.reduce((a,b)=>a+b.quantity,0)}</p></div>`;
-        } catch(e) {}
+            snap.forEach(d => { const data = d.data(); html += `<tr><td class="py-1 text-white">${escapeHtml(data.firstName || '')} ${escapeHtml(data.lastName || '')}</td><td class="text-white">${escapeHtml(data.email)}</td><td class="text-white">${escapeHtml(data.role || 'user')}</td>`; });
+            dom.userTable.innerHTML = html;
+            if (dom.perfStats) dom.perfStats.innerHTML = `<div class="p-3"><p class="font-semibold text-amber-400">📊 Site Performance</p><p class="text-white">👥 Users: ${snap.size}</p><p class="text-white">⌚ Products: ${products.length}</p><p class="text-white">🛒 Cart: ${cart.reduce((a, b) => a + b.quantity, 0)}</p></div>`;
+        } catch (e) { console.warn(e); }
     }
 
-    // Auth (unchanged)
-    async function register(email,pwd,first,last) {
+    // ----------------------------- Auth -----------------------------
+    async function register(email, pwd, first, last) {
         showLoader();
         try {
-            const cred = await createUserWithEmailAndPassword(auth,email,pwd);
+            const cred = await createUserWithEmailAndPassword(auth, email, pwd);
             const role = email === 'admin@rollingwatch.com' ? 'admin' : 'user';
-            await setDoc(doc(db,"users",cred.user.uid), {firstName:first, lastName:last, email, role, createdAt:new Date()});
-            showMessage(`Welcome ${first}!`,'success');
-            closeModal(regModal);
-        } catch(err) { showMessage(getFriendlyError(err.code),'error'); }
-        finally { hideLoader(); }
+            await setDoc(doc(db, "users", cred.user.uid), { firstName: first, lastName: last, email, role, createdAt: new Date() });
+            showMessage(`Welcome ${first}!`, 'success');
+            closeModal(dom.regModal);
+        } catch (err) { showMessage(getFriendlyError(err.code), 'error'); } finally { hideLoader(); }
     }
-    async function login(email,pwd) {
+    async function login(email, pwd) {
         showLoader();
-        try { await signInWithEmailAndPassword(auth,email,pwd); showMessage('Login success','success'); closeModal(loginModal); }
-        catch(err) { showMessage(getFriendlyError(err.code),'error'); }
-        finally { hideLoader(); }
+        try { await signInWithEmailAndPassword(auth, email, pwd); showMessage('Login success', 'success'); closeModal(dom.loginModal); }
+        catch (err) { showMessage(getFriendlyError(err.code), 'error'); } finally { hideLoader(); }
     }
-    function logout() { signOut(auth); showMessage('Logged out','info'); }
+    function logout() { signOut(auth); showMessage('Logged out', 'info'); }
 
-    // Navigation
-    function showHome() { homeSec.classList.remove('hidden'); userSec.classList.add('hidden'); adminSec.classList.add('hidden'); fetchProducts(); }
-    function showUser() { if(!currentUser) { showMessage('Please login first','warning'); return; } homeSec.classList.add('hidden'); adminSec.classList.add('hidden'); userSec.classList.remove('hidden'); loadProfile(); }
-    function showAdmin() { if(userRole !== 'admin') { showMessage('Admin only','error'); return; } homeSec.classList.add('hidden'); userSec.classList.add('hidden'); adminSec.classList.remove('hidden'); fetchProducts(); fetchUsers(); }
+    // ----------------------------- Navigation & UI -----------------------------
+    function showHome() { dom.homeSec.classList.remove('hidden'); dom.userSec.classList.add('hidden'); dom.adminSec.classList.add('hidden'); fetchProducts(); }
+    function showUser() { if (!currentUser) { showMessage('Please login first', 'warning'); return; } dom.homeSec.classList.add('hidden'); dom.adminSec.classList.add('hidden'); dom.userSec.classList.remove('hidden'); loadProfile(); }
+    function showAdmin() { if (userRole !== 'admin') { showMessage('Admin only', 'error'); return; } dom.homeSec.classList.add('hidden'); dom.userSec.classList.add('hidden'); dom.adminSec.classList.remove('hidden'); fetchProducts(); fetchUsers(); }
     async function loadProfile() {
-        if(!currentUser) return;
+        if (!currentUser) return;
         try {
-            const snap = await getDoc(doc(db,"users",currentUser.uid));
-            if(snap.exists()) { const d=snap.data(); userInfoDiv.innerHTML=`<div class="p-4 bg-black/40 rounded-xl"><strong class="text-amber-400">${escapeHtml(d.firstName)} ${escapeHtml(d.lastName)}</strong><br class="text-white">${escapeHtml(d.email)}<br>Role: ${escapeHtml(d.role)}</div>`; contactSpan.innerText = d.email; }
-            else { userInfoDiv.innerHTML='<p>Profile error</p>'; contactSpan.innerText = currentUser.email; }
-        } catch(e) { showMessage('Profile load error','error'); }
+            const snap = await getDoc(doc(db, "users", currentUser.uid));
+            if (snap.exists()) { const d = snap.data(); dom.userInfo.innerHTML = `<div class="p-4 bg-black/40 rounded-xl"><strong class="text-amber-400">${escapeHtml(d.firstName)} ${escapeHtml(d.lastName)}</strong><br>${escapeHtml(d.email)}<br>Role: ${escapeHtml(d.role)}</div>`; dom.contactSpan.innerText = d.email; }
+            else { dom.userInfo.innerHTML = '<p>Profile error</p>'; dom.contactSpan.innerText = currentUser.email; }
+        } catch (e) { showMessage('Profile load error', 'error'); }
     }
     function updateNav() {
         const logged = !!currentUser;
-        regBtn.classList.toggle('hidden', logged);
-        loginBtn.classList.toggle('hidden', logged);
-        logoutBtn.classList.toggle('hidden', !logged);
-        userNav.classList.toggle('hidden', !logged);
-        adminNav.classList.toggle('hidden', userRole !== 'admin');
+        dom.registerBtn.classList.toggle('hidden', logged);
+        dom.loginBtn.classList.toggle('hidden', logged);
+        dom.logoutBtn.classList.toggle('hidden', !logged);
+        dom.userNav.classList.toggle('hidden', !logged);
+        dom.adminNav.classList.toggle('hidden', userRole !== 'admin');
     }
     onAuthStateChanged(auth, async (user) => {
         currentUser = user;
-        if(user) {
-            try { const snap = await getDoc(doc(db,"users",user.uid)); userRole = snap.exists() ? snap.data().role : (user.email==='admin@rollingwatch.com' ? 'admin' : 'user'); }
-            catch(e) { userRole = 'user'; }
+        if (user) {
+            try { const snap = await getDoc(doc(db, "users", user.uid)); userRole = snap.exists() ? snap.data().role : (user.email === 'admin@rollingwatch.com' ? 'admin' : 'user'); }
+            catch (e) { userRole = 'user'; }
         } else { userRole = 'guest'; }
         updateNav();
-        if(userRole === 'admin') adminNav.classList.remove('hidden');
-        if(currentUser && !userSec.classList.contains('hidden')) loadProfile();
+        if (userRole === 'admin') dom.adminNav.classList.remove('hidden');
+        if (currentUser && !dom.userSec.classList.contains('hidden')) loadProfile();
     });
 
-    // Event listeners
-    homeNav.onclick = showHome;
-    userNav.onclick = showUser;
-    adminNav.onclick = showAdmin;
-    regBtn.onclick = () => openModal(regModal);
-    loginBtn.onclick = () => openModal(loginModal);
-    logoutBtn.onclick = logout;
-    closeReg.onclick = () => closeModal(regModal);
-    closeLogin.onclick = () => closeModal(loginModal);
-    cartBtn.onclick = () => { cartSide.classList.remove('translate-x-full'); cartOver.classList.remove('hidden'); };
-    closeCart.onclick = () => { cartSide.classList.add('translate-x-full'); cartOver.classList.add('hidden'); };
-    cartOver.onclick = () => { cartSide.classList.add('translate-x-full'); cartOver.classList.add('hidden'); };
-    regForm.onsubmit = (e) => { e.preventDefault(); const p=document.getElementById('regPassword').value, cp=document.getElementById('regConfirmPassword').value; if(p!==cp) { showMessage('Passwords mismatch','warning'); return; } register(document.getElementById('regEmail').value, p, document.getElementById('regFirstName').value, document.getElementById('regLastName').value); };
-    loginForm.onsubmit = (e) => { e.preventDefault(); login(document.getElementById('loginEmail').value, document.getElementById('loginPassword').value); };
-    function openModal(m) { m.classList.remove('hidden'); }
-    function closeModal(m) { m.classList.add('hidden'); }
-    socialDiv.innerHTML = `<a href="https://facebook.com/rollingwatch" target="_blank" class="text-blue-400 hover:text-blue-300 text-2xl transition"><i class="fab fa-facebook"></i></a> <a href="https://instagram.com/rollingwatch" target="_blank" class="text-pink-400 hover:text-pink-300 text-2xl transition"><i class="fab fa-instagram"></i></a> <a href="https://twitter.com/rollingwatch" target="_blank" class="text-sky-400 hover:text-sky-300 text-2xl transition"><i class="fab fa-twitter"></i></a>`;
-    
-    document.getElementById('heroShopBtn')?.addEventListener('click', () => { const grid = document.getElementById('productsGrid'); if(grid) grid.scrollIntoView({ behavior: 'smooth' }); });
-    document.getElementById('heroExploreBtn')?.addEventListener('click', () => { const grid = document.getElementById('productsGrid'); if(grid) grid.scrollIntoView({ behavior: 'smooth' }); });
+    // ----------------------------- Event Binding (conflict‑free) -----------------------------
+    const openModal = (m) => m.classList.remove('hidden');
+    const closeModal = (m) => m.classList.add('hidden');
+    dom.homeNav.onclick = showHome;
+    dom.userNav.onclick = showUser;
+    dom.adminNav.onclick = showAdmin;
+    dom.registerBtn.onclick = () => openModal(dom.regModal);
+    dom.loginBtn.onclick = () => openModal(dom.loginModal);
+    dom.logoutBtn.onclick = logout;
+    dom.closeReg.onclick = () => closeModal(dom.regModal);
+    dom.closeLogin.onclick = () => closeModal(dom.loginModal);
+    dom.cartBtn.onclick = () => { dom.cartSidebar.classList.remove('translate-x-full'); dom.cartOverlay.classList.remove('hidden'); };
+    dom.closeCart.onclick = () => { dom.cartSidebar.classList.add('translate-x-full'); dom.cartOverlay.classList.add('hidden'); };
+    dom.cartOverlay.onclick = () => { dom.cartSidebar.classList.add('translate-x-full'); dom.cartOverlay.classList.add('hidden'); };
+    dom.regForm.onsubmit = (e) => { e.preventDefault(); const p = document.getElementById('regPassword').value, cp = document.getElementById('regConfirmPassword').value; if (p !== cp) { showMessage('Passwords mismatch', 'warning'); return; } register(document.getElementById('regEmail').value, p, document.getElementById('regFirstName').value, document.getElementById('regLastName').value); };
+    dom.loginForm.onsubmit = (e) => { e.preventDefault(); login(document.getElementById('loginEmail').value, document.getElementById('loginPassword').value); };
+    dom.socialContainer.innerHTML = `<a href="https://facebook.com/rollingwatch" target="_blank" class="text-blue-400 hover:text-blue-300 text-2xl"><i class="fab fa-facebook"></i></a> <a href="https://instagram.com/rollingwatch" target="_blank" class="text-pink-400 hover:text-pink-300 text-2xl"><i class="fab fa-instagram"></i></a> <a href="https://twitter.com/rollingwatch" target="_blank" class="text-sky-400 hover:text-sky-300 text-2xl"><i class="fab fa-twitter"></i></a>`;
+    document.getElementById('heroShopBtn')?.addEventListener('click', () => document.getElementById('productsGrid')?.scrollIntoView({ behavior: 'smooth' }));
+    document.getElementById('heroExploreBtn')?.addEventListener('click', () => document.getElementById('productsGrid')?.scrollIntoView({ behavior: 'smooth' }));
 
     loadCart();
     fetchProducts();
     showHome();
 </script>
-
-<!-- Additional styles for notifications and loader (same as before, dark themed) -->
-<style>
-    .notification {
-        position: fixed;
-        top: 85px;
-        right: 20px;
-        z-index: 10000;
-        min-width: 260px;
-        max-width: 360px;
-        padding: 12px 18px;
-        border-radius: 12px;
-        background: rgba(0,0,0,0.9);
-        backdrop-filter: blur(8px);
-        box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5);
-        transform: translateX(120%);
-        transition: transform 0.25s ease-out;
-        font-family: 'Inter', sans-serif;
-        font-size: 0.85rem;
-        font-weight: 500;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        border-left: 5px solid;
-        color: white;
-    }
-    .notification-success { border-left-color: #10b981; }
-    .notification-error { border-left-color: #ef4444; }
-    .loader-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:10001; display:flex; justify-content:center; align-items:center; visibility:hidden; opacity:0; transition:all 0.2s; }
-    .loader-overlay.active { visibility:visible; opacity:1; }
-    .spinner { width:50px; height:50px; border:4px solid rgba(255,255,255,0.3); border-top:4px solid #d4af37; border-radius:50%; animation:spin 0.8s linear infinite; }
-    @keyframes spin { 100% { transform:rotate(360deg); } }
-</style>
 </body>
 </html>
