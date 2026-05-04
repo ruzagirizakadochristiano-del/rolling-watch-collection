@@ -6,170 +6,178 @@
     <title>ROLLING WATCH COLLECTION | Timeless Luxury</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Custom background gradient and subtle animations -->
     <style>
+        /* Custom luxury background - high-end watch texture */
         body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #e9edf2 100%);
+            background: #0a0a0a url('https://images.pexels.com/photos/190819/pexels-photo-190819.jpeg?auto=compress&cs=tinysrgb&w=1600') fixed center/cover no-repeat;
+            background-attachment: fixed;
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
-        }
-        .hero-bg {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             position: relative;
-            overflow: hidden;
         }
-        .hero-bg::before {
+        body::before {
             content: '';
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: url('https://www.transparenttextures.com/patterns/diamond-upholstery.png');
-            opacity: 0.05;
-            pointer-events: none;
+            background: rgba(0,0,0,0.7);
+            z-index: -1;
+        }
+        /* Hero section with Rolex-inspired gradient and gold overlay */
+        .hero-bg {
+            background: linear-gradient(135deg, rgba(0,0,0,0.85) 0%, rgba(26,26,46,0.9) 100%);
+            position: relative;
+            backdrop-filter: blur(2px);
+            border-bottom: 2px solid #d4af37;
+        }
+        .hero-bg::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #d4af37, #f9e79f, #d4af37);
         }
         .product-card {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(2px);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(212,175,55,0.2);
         }
         .product-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 20px 25px -12px rgba(0,0,0,0.2);
-        }
-        .btn-hover {
-            transition: all 0.2s ease;
-        }
-        .btn-hover:hover {
-            transform: scale(1.02);
-        }
-        .notification {
-            backdrop-filter: blur(8px);
-            background: rgba(255,255,255,0.95);
-        }
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #c7a17a;
-            border-radius: 10px;
-        }
-        .cart-sidebar {
-            box-shadow: -5px 0 20px rgba(0,0,0,0.1);
-        }
-        input, textarea, select {
-            transition: all 0.2s;
-            border: 1px solid #e2e8f0;
-        }
-        input:focus, textarea:focus, select:focus {
-            outline: none;
-            border-color: #c7a17a;
-            box-shadow: 0 0 0 3px rgba(199,161,122,0.2);
+            box-shadow: 0 25px 35px -12px rgba(0,0,0,0.3);
+            border-color: rgba(212,175,55,0.6);
         }
         .gold-text {
-            background: linear-gradient(135deg, #c7a17a, #d4af37);
+            background: linear-gradient(135deg, #e6c27a, #d4af37, #b8860b);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        .btn-gold {
+            background: linear-gradient(135deg, #d4af37, #b8860b);
+            transition: all 0.2s;
+        }
+        .btn-gold:hover {
+            transform: scale(1.02);
+            background: linear-gradient(135deg, #e6c27a, #d4af37);
+        }
+        .cart-sidebar {
+            background: rgba(255,255,255,0.98);
+            backdrop-filter: blur(10px);
+        }
+        input, textarea {
+            background: rgba(255,255,255,0.95);
+            border: 1px solid #d4af37aa;
+        }
+        input:focus, textarea:focus {
+            border-color: #d4af37;
+            box-shadow: 0 0 0 3px rgba(212,175,55,0.3);
+        }
+        .rolex-badge {
+            font-family: 'Times New Roman', serif;
+            letter-spacing: 2px;
         }
     </style>
 </head>
-<body class="bg-gray-50">
+<body>
 
 <div id="notificationContainer"></div>
 <div id="globalLoader" class="loader-overlay"><div class="spinner"></div></div>
 
-<!-- Enhanced Navbar with gold accents -->
-<nav class="bg-black/90 backdrop-blur-sm text-white px-6 py-4 flex justify-between items-center shadow-xl sticky top-0 z-30 border-b border-amber-800/30">
-    <div class="text-2xl font-bold tracking-wide"><i class="fas fa-clock text-amber-500 mr-2"></i>ROLLING WATCH <span class="text-amber-500">COLLECTION</span></div>
-    <div class="flex gap-4 items-center">
-        <button id="homeNavBtn" class="hover:text-amber-400 transition px-2 py-1 rounded-md">Home</button>
+<!-- Navbar with luxury feel -->
+<nav class="bg-black/80 backdrop-blur-md text-white px-6 py-4 flex justify-between items-center shadow-xl sticky top-0 z-30 border-b border-amber-700/40">
+    <div class="text-2xl font-bold tracking-wider"><i class="fas fa-crown text-amber-500 mr-2"></i>ROLLING WATCH <span class="gold-text">COLLECTION</span></div>
+    <div class="flex gap-5 items-center">
+        <button id="homeNavBtn" class="hover:text-amber-400 transition font-medium">Home</button>
         <button id="userPanelNavBtn" class="hover:text-amber-400 hidden transition">My Panel</button>
         <button id="adminPanelNavBtn" class="hover:text-amber-400 hidden transition">Admin</button>
         <button id="cartIconBtn" class="relative hover:text-amber-400 transition">
             <i class="fas fa-shopping-cart text-xl"></i>
             <span id="cartCount" class="absolute -top-2 -right-3 bg-amber-500 text-black text-xs font-bold rounded-full px-1.5 min-w-[20px] text-center">0</span>
         </button>
-        <button id="registerBtn" class="bg-amber-600 hover:bg-amber-700 px-4 py-1.5 rounded-full text-sm transition shadow-md">Register</button>
-        <button id="loginBtn" class="border border-amber-500 hover:bg-amber-700 px-4 py-1.5 rounded-full text-sm transition">Login</button>
-        <button id="logoutBtn" class="hidden bg-gray-700 hover:bg-gray-600 px-4 py-1.5 rounded-full text-sm transition">Logout</button>
+        <button id="registerBtn" class="btn-gold text-black px-5 py-1.5 rounded-full text-sm font-semibold shadow-md">Register</button>
+        <button id="loginBtn" class="border border-amber-500 hover:bg-amber-700 px-5 py-1.5 rounded-full text-sm transition">Login</button>
+        <button id="logoutBtn" class="hidden bg-gray-700 hover:bg-gray-600 px-5 py-1.5 rounded-full text-sm transition">Logout</button>
     </div>
 </nav>
 
-<!-- Hero Section - Enhanced -->
-<section class="hero-bg text-white py-20 md:py-28">
+<!-- Hero Section with Rolex tribute -->
+<section class="hero-bg text-white py-24 md:py-32">
     <div class="max-w-7xl mx-auto px-6 text-center">
-        <h1 class="text-5xl md:text-6xl font-bold mb-4">Timeless <span class="gold-text">Elegance</span></h1>
-        <p class="text-xl md:text-2xl text-gray-200 max-w-2xl mx-auto">Discover precision craftsmanship and luxury design for the modern connoisseur.</p>
-        <div class="mt-8 flex justify-center gap-4">
-            <button id="heroShopBtn" class="bg-amber-600 hover:bg-amber-700 px-6 py-3 rounded-full font-semibold transition shadow-lg">Shop Now</button>
-            <button id="heroExploreBtn" class="border border-white/30 hover:bg-white/10 px-6 py-3 rounded-full font-semibold transition">Explore Collection</button>
+        <div class="inline-block mb-4 px-4 py-1 border border-amber-500/50 rounded-full text-sm uppercase tracking-wider rolex-badge">Since 2025</div>
+        <h1 class="text-5xl md:text-7xl font-bold mb-4">Timeless <span class="gold-text">Elegance</span></h1>
+        <p class="text-xl md:text-2xl text-gray-200 max-w-2xl mx-auto">Inspired by the precision of Rolex, designed for the discerning.</p>
+        <div class="mt-10 flex justify-center gap-5">
+            <button id="heroShopBtn" class="btn-gold text-black px-8 py-3 rounded-full font-semibold text-lg shadow-xl transition">Explore Collection</button>
+            <button id="heroExploreBtn" class="border border-white/40 hover:bg-white/10 px-8 py-3 rounded-full font-semibold text-lg transition">Discover Craftsmanship</button>
         </div>
     </div>
 </section>
 
-<!-- Home Section (Product Grid) -->
-<section id="home-section" class="max-w-7xl mx-auto px-4 py-12">
+<!-- Home Section (Product Grid) with semi-transparent background -->
+<section id="home-section" class="max-w-7xl mx-auto px-4 py-16">
     <div class="text-center mb-12">
-        <h2 class="text-3xl font-bold text-gray-800">Our <span class="text-amber-700">Collection</span></h2>
-        <div class="w-24 h-1 bg-amber-500 mx-auto mt-2 rounded-full"></div>
-        <p class="text-gray-600 mt-3">Handpicked timepieces for every moment</p>
+        <h2 class="text-4xl font-bold text-white">Our <span class="gold-text">Collection</span></h2>
+        <div class="w-24 h-1 bg-amber-500 mx-auto mt-3 rounded-full"></div>
+        <p class="text-gray-200 mt-3">Each timepiece tells a story of excellence</p>
     </div>
     <div id="productsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"></div>
 </section>
 
-<!-- User Panel (Dashboard) - same functionality, new styling -->
+<!-- User Panel (same structure, dark adapted) -->
 <section id="user-panel-section" class="max-w-4xl mx-auto px-4 py-12 hidden">
-    <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-6 border border-gray-100">
-        <h2 class="text-2xl font-bold border-b border-amber-200 pb-2 mb-4"><i class="fas fa-id-card text-amber-600 mr-2"></i>My Dashboard</h2>
+    <div class="bg-black/70 backdrop-blur-md rounded-2xl shadow-2xl p-6 border border-amber-500/30 text-white">
+        <h2 class="text-2xl font-bold border-b border-amber-500/40 pb-2 mb-4"><i class="fas fa-id-card text-amber-500 mr-2"></i>My Dashboard</h2>
         <div id="userInfoDisplay"></div>
-        <div class="mt-6 bg-gradient-to-r from-gray-50 to-white p-5 rounded-xl">
-            <h3 class="font-semibold text-lg text-gray-800">📧 Contact & Social</h3>
-            <p class="text-gray-700">Official Contact Email: <span id="contactEmailSpan" class="font-mono text-amber-700"></span></p>
+        <div class="mt-6 bg-black/40 p-5 rounded-xl">
+            <h3 class="font-semibold text-lg">📧 Contact & Social</h3>
+            <p>Official Contact Email: <span id="contactEmailSpan" class="font-mono text-amber-400"></span></p>
             <div id="socialLinksContainer" class="flex gap-4 mt-3"></div>
         </div>
     </div>
 </section>
 
-<!-- Admin Panel (unchanged functionality, better form styling) -->
+<!-- Admin Panel (same functionality, dark theme) -->
 <section id="admin-panel-section" class="max-w-6xl mx-auto px-4 py-12 hidden">
-    <div class="bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl p-6 mb-8 border border-gray-100">
-        <h2 class="text-2xl font-bold text-gray-800">🛠️ Product Management</h2>
+    <div class="bg-black/80 backdrop-blur-md rounded-2xl shadow-2xl p-6 mb-8 border border-amber-500/30 text-white">
+        <h2 class="text-2xl font-bold text-amber-400">🛠️ Product Management</h2>
         <form id="productForm" class="grid md:grid-cols-2 gap-4 mt-5">
-            <input type="text" id="productName" placeholder="Watch name" class="border border-gray-300 p-2 rounded-lg focus:ring-2 focus:ring-amber-300" required>
-            <input type="number" step="0.01" id="productPrice" placeholder="Price (USD)" class="border border-gray-300 p-2 rounded-lg focus:ring-2 focus:ring-amber-300" required>
-            <textarea id="productDesc" placeholder="Description" class="border border-gray-300 p-2 rounded-lg md:col-span-2 focus:ring-2 focus:ring-amber-300"></textarea>
-            <input type="file" id="productImage" accept="image/*" class="border border-gray-300 p-1 rounded-lg">
+            <input type="text" id="productName" placeholder="Watch name" class="bg-gray-900 text-white border border-amber-500/50 p-2 rounded-lg focus:ring-2 focus:ring-amber-300" required>
+            <input type="number" step="0.01" id="productPrice" placeholder="Price (USD)" class="bg-gray-900 text-white border border-amber-500/50 p-2 rounded-lg" required>
+            <textarea id="productDesc" placeholder="Description" class="bg-gray-900 text-white border border-amber-500/50 p-2 rounded-lg md:col-span-2"></textarea>
+            <input type="file" id="productImage" accept="image/*" class="bg-gray-900 text-white border border-amber-500/50 p-1 rounded-lg">
             <div class="md:col-span-2 flex gap-3">
-                <button type="submit" class="bg-amber-600 hover:bg-amber-700 text-white px-5 py-2 rounded-lg transition shadow-md"><span id="productFormTitle">➕ Add New Watch</span></button>
-                <button type="button" id="cancelEdit" class="bg-gray-500 hover:bg-gray-600 text-white px-5 py-2 rounded-lg transition hidden">Cancel Edit</button>
+                <button type="submit" class="btn-gold text-black px-5 py-2 rounded-lg font-semibold shadow"><span id="productFormTitle">➕ Add New Watch</span></button>
+                <button type="button" id="cancelEdit" class="bg-gray-600 hover:bg-gray-500 text-white px-5 py-2 rounded-lg transition hidden">Cancel Edit</button>
             </div>
         </form>
-        <div class="mt-8"><h3 class="font-bold text-xl text-gray-800">📋 Inventory</h3><div id="productListAdmin" class="mt-2 space-y-2"></div></div>
+        <div class="mt-8"><h3 class="font-bold text-xl text-amber-400">📋 Inventory</h3><div id="productListAdmin" class="mt-2 space-y-2 text-white"></div></div>
     </div>
     <div class="grid md:grid-cols-2 gap-6">
-        <div class="bg-white/95 backdrop-blur-sm p-5 rounded-2xl shadow"><h3 class="text-xl font-bold mb-3">👥 Registered Users</h3><div class="overflow-auto max-h-72"><table id="userListAdmin" class="w-full text-sm"></table></div></div>
-        <div id="performanceStats" class="bg-white/95 backdrop-blur-sm p-5 rounded-2xl shadow"></div>
+        <div class="bg-black/70 backdrop-blur-md p-5 rounded-2xl shadow border border-amber-500/20 text-white"><h3 class="text-xl font-bold mb-3 text-amber-400">👥 Registered Users</h3><div class="overflow-auto max-h-72"><table id="userListAdmin" class="w-full text-sm"></tr></div></div>
+        <div id="performanceStats" class="bg-black/70 backdrop-blur-md p-5 rounded-2xl shadow border border-amber-500/20 text-white"></div>
     </div>
 </section>
 
-<!-- Cart Sidebar (enhanced) -->
-<div id="cartOverlay" class="fixed inset-0 bg-black/60 z-40 hidden"></div>
-<div id="cartSidebar" class="fixed top-0 right-0 w-96 h-full bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300 flex flex-col cart-sidebar">
-    <div class="flex justify-between items-center p-5 border-b border-gray-200"><h2 class="text-2xl font-bold"><i class="fas fa-shopping-bag text-amber-600 mr-2"></i>Your Cart</h2><button id="closeCart" class="text-3xl text-gray-500 hover:text-amber-600">&times;</button></div>
-    <div id="cartItems" class="flex-1 overflow-y-auto p-4"></div>
-    <div class="border-t p-5 bg-gray-50"><div class="flex justify-between text-xl font-bold">Total: $<span id="cartTotal">0.00</span></div><button class="w-full bg-amber-600 hover:bg-amber-700 text-white py-3 mt-4 rounded-full transition shadow">Secure Checkout</button></div>
+<!-- Cart Sidebar (dark style) -->
+<div id="cartOverlay" class="fixed inset-0 bg-black/80 z-40 hidden"></div>
+<div id="cartSidebar" class="fixed top-0 right-0 w-96 h-full bg-black/90 backdrop-blur-xl shadow-2xl z-50 transform translate-x-full transition-transform duration-300 flex flex-col border-l border-amber-500/30">
+    <div class="flex justify-between items-center p-5 border-b border-amber-500/30"><h2 class="text-2xl font-bold text-amber-400"><i class="fas fa-shopping-bag mr-2"></i>Your Cart</h2><button id="closeCart" class="text-3xl text-gray-400 hover:text-amber-400">&times;</button></div>
+    <div id="cartItems" class="flex-1 overflow-y-auto p-4 text-white"></div>
+    <div class="border-t border-amber-500/30 p-5 bg-black/50"><div class="flex justify-between text-xl font-bold text-white">Total: $<span id="cartTotal" class="text-amber-400">0.00</span></div><button class="w-full btn-gold text-black py-3 mt-4 rounded-full font-semibold shadow transition">Secure Checkout</button></div>
 </div>
 
-<!-- Modals (same HTML, just subtle style) -->
-<div id="registerModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 hidden">
-    <div class="bg-white rounded-2xl max-w-md w-full p-6 relative shadow-2xl"><button id="closeRegModal" class="absolute top-3 right-4 text-2xl text-gray-500 hover:text-amber-600">&times;</button><h3 class="text-2xl font-bold mb-4">Create Account</h3><form id="regForm"><input type="text" id="regFirstName" placeholder="First Name" class="w-full border p-2 mb-3 rounded-lg" required><input type="text" id="regLastName" placeholder="Last Name" class="w-full border p-2 mb-3 rounded-lg" required><input type="email" id="regEmail" placeholder="Email" class="w-full border p-2 mb-3 rounded-lg" required><input type="password" id="regPassword" placeholder="Password (min 6 chars)" class="w-full border p-2 mb-3 rounded-lg" required><input type="password" id="regConfirmPassword" placeholder="Confirm Password" class="w-full border p-2 mb-4 rounded-lg" required><button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white py-2 rounded-full transition">Register</button></form></div>
+<!-- Modals (dark luxury) -->
+<div id="registerModal" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 hidden">
+    <div class="bg-gradient-to-br from-gray-900 to-black rounded-2xl max-w-md w-full p-6 relative border border-amber-500/30 shadow-2xl"><button id="closeRegModal" class="absolute top-3 right-4 text-2xl text-gray-400 hover:text-amber-400">&times;</button><h3 class="text-2xl font-bold text-amber-400 mb-4">Create Account</h3><form id="regForm"><input type="text" id="regFirstName" placeholder="First Name" class="w-full bg-gray-800 text-white border border-amber-500/50 p-2 mb-3 rounded-lg" required><input type="text" id="regLastName" placeholder="Last Name" class="w-full bg-gray-800 text-white border border-amber-500/50 p-2 mb-3 rounded-lg" required><input type="email" id="regEmail" placeholder="Email" class="w-full bg-gray-800 text-white border border-amber-500/50 p-2 mb-3 rounded-lg" required><input type="password" id="regPassword" placeholder="Password (min 6 chars)" class="w-full bg-gray-800 text-white border border-amber-500/50 p-2 mb-3 rounded-lg" required><input type="password" id="regConfirmPassword" placeholder="Confirm Password" class="w-full bg-gray-800 text-white border border-amber-500/50 p-2 mb-4 rounded-lg" required><button type="submit" class="w-full btn-gold text-black py-2 rounded-full font-semibold">Register</button></form></div>
 </div>
-<div id="loginModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 hidden">
-    <div class="bg-white rounded-2xl max-w-md w-full p-6 relative shadow-2xl"><button id="closeLoginModal" class="absolute top-3 right-4 text-2xl text-gray-500 hover:text-amber-600">&times;</button><h3 class="text-2xl font-bold mb-4">Welcome Back</h3><form id="loginForm"><input type="email" id="loginEmail" placeholder="Email" class="w-full border p-2 mb-3 rounded-lg" required><input type="password" id="loginPassword" placeholder="Password" class="w-full border p-2 mb-4 rounded-lg" required><button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white py-2 rounded-full transition">Login</button><p class="text-xs text-center mt-3 text-gray-500">Admin: admin@rollingwatch.com</p></form></div>
+<div id="loginModal" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 hidden">
+    <div class="bg-gradient-to-br from-gray-900 to-black rounded-2xl max-w-md w-full p-6 relative border border-amber-500/30"><button id="closeLoginModal" class="absolute top-3 right-4 text-2xl text-gray-400 hover:text-amber-400">&times;</button><h3 class="text-2xl font-bold text-amber-400 mb-4">Welcome Back</h3><form id="loginForm"><input type="email" id="loginEmail" placeholder="Email" class="w-full bg-gray-800 text-white border border-amber-500/50 p-2 mb-3 rounded-lg" required><input type="password" id="loginPassword" placeholder="Password" class="w-full bg-gray-800 text-white border border-amber-500/50 p-2 mb-4 rounded-lg" required><button type="submit" class="w-full btn-gold text-black py-2 rounded-full font-semibold">Login</button><p class="text-xs text-center mt-3 text-gray-400">Admin: admin@rollingwatch.com</p></form></div>
 </div>
 
 <script type="module">
@@ -192,7 +200,7 @@
     const db = getFirestore(app);
     const IMGBB_API_KEY = "4fa8b99e2ba50cfe70cc9f69257055bb";
 
-    // UI Helpers (same as before)
+    // ----- UI Helpers (unchanged) -----
     const loader = document.getElementById('globalLoader');
     function showLoader() { loader.classList.add('active'); }
     function hideLoader() { loader.classList.remove('active'); }
@@ -222,7 +230,7 @@
         return map[code] || `Error: ${code}`;
     }
 
-    // DOM references (same IDs)
+    // DOM references (all IDs unchanged)
     const homeSec = document.getElementById('home-section');
     const userSec = document.getElementById('user-panel-section');
     const adminSec = document.getElementById('admin-panel-section');
@@ -235,23 +243,23 @@
     const regForm = document.getElementById('regForm'), loginForm = document.getElementById('loginForm');
     const productForm = document.getElementById('productForm'), productList = document.getElementById('productListAdmin');
     const userTable = document.getElementById('userListAdmin'), perfStats = document.getElementById('performanceStats');
-    const cancelBtn = document.getElementById('cancelEdit'), userInfo = document.getElementById('userInfoDisplay'), contactSpan = document.getElementById('contactEmailSpan');
+    const cancelBtn = document.getElementById('cancelEdit'), userInfoDiv = document.getElementById('userInfoDisplay'), contactSpan = document.getElementById('contactEmailSpan');
     const socialDiv = document.getElementById('socialLinksContainer');
     let currentUser = null, userRole = 'guest', products = [], cart = [], editingId = null;
 
-    // Cart functions (unchanged)
+    // ----- Cart (identical logic) -----
     function saveCart() { localStorage.setItem('rollingWatchCart', JSON.stringify(cart)); updateCartUI(); }
     function loadCart() { const s = localStorage.getItem('rollingWatchCart'); cart = s ? JSON.parse(s) : []; updateCartUI(); }
     function updateCartUI() {
         let total=0, count=0;
         cartItemsDiv.innerHTML = '';
-        if(!cart.length) cartItemsDiv.innerHTML = '<div class="text-center py-6 text-gray-500">Your cart is empty</div>';
+        if(!cart.length) cartItemsDiv.innerHTML = '<div class="text-center py-6 text-gray-400">Cart empty</div>';
         else cart.forEach((item,idx) => {
             total += item.price * item.quantity;
             count += item.quantity;
             const div = document.createElement('div');
-            div.className = 'flex gap-3 border-b pb-3 mb-3';
-            div.innerHTML = `<img src="${item.imageUrl||'https://via.placeholder.com/60'}" class="w-14 h-14 object-cover rounded"><div class="flex-1"><b>${escapeHtml(item.name)}</b><br>$${item.price}<div class="flex gap-2 mt-1"><button class="cart-dec bg-gray-100 px-2 rounded" data-idx="${idx}">-</button><span>${item.quantity}</span><button class="cart-inc bg-gray-100 px-2 rounded" data-idx="${idx}">+</button><button class="cart-del text-red-500 ml-1" data-idx="${idx}">🗑</button></div></div><div>$${(item.price*item.quantity).toFixed(2)}</div>`;
+            div.className = 'flex gap-3 border-b border-gray-700 pb-3 mb-3 text-white';
+            div.innerHTML = `<img src="${item.imageUrl||'https://via.placeholder.com/60'}" class="w-14 h-14 object-cover rounded"><div class="flex-1"><b>${escapeHtml(item.name)}</b><br>$${item.price}<div class="flex gap-2 mt-1"><button class="cart-dec bg-gray-700 text-white px-2 rounded" data-idx="${idx}">-</button><span>${item.quantity}</span><button class="cart-inc bg-gray-700 text-white px-2 rounded" data-idx="${idx}">+</button><button class="cart-del text-red-400 ml-1" data-idx="${idx}">🗑</button></div></div><div>$${(item.price*item.quantity).toFixed(2)}</div>`;
             cartItemsDiv.appendChild(div);
         });
         cartTotal.innerText = total.toFixed(2);
@@ -262,7 +270,7 @@
     }
     function addToCart(p) { let e = cart.find(i=>i.id===p.id); e ? e.quantity++ : cart.push({...p, quantity:1}); saveCart(); showMessage(`${p.name} added`,'success'); }
 
-    // Products (unchanged logic, just using ImgBB upload)
+    // ----- Products (unchanged, including ImgBB) -----
     async function fetchProducts() {
         showLoader();
         try {
@@ -275,14 +283,14 @@
     }
     function renderProducts() {
         const grid = document.getElementById('productsGrid');
-        if(!products.length) { grid.innerHTML='<div class="text-center py-10 text-gray-500">✨ No watches yet. Admin can add.</div>'; return; }
-        grid.innerHTML = products.map(p=>`<div class="product-card bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300"><img src="${p.imageUrl||'https://via.placeholder.com/300'}" class="h-56 w-full object-cover" loading="lazy"><div class="p-4"><h3 class="font-bold text-xl text-gray-800">${escapeHtml(p.name)}</h3><p class="text-gray-600 text-sm mt-1">${escapeHtml(p.description?.substring(0,80)||'')}</p><div class="flex justify-between items-center mt-4"><span class="text-2xl font-bold text-amber-700">$${p.price}</span><button class="add-cart bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-full text-sm transition shadow" data-id="${p.id}"><i class="fas fa-cart-plus mr-1"></i> Add</button></div></div></div>`).join('');
+        if(!products.length) { grid.innerHTML='<div class="text-center py-10 text-gray-300">✨ No watches yet. Admin can add.</div>'; return; }
+        grid.innerHTML = products.map(p=>`<div class="product-card bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl overflow-hidden"><img src="${p.imageUrl||'https://via.placeholder.com/300'}" class="h-56 w-full object-cover"><div class="p-4"><h3 class="font-bold text-xl text-gray-900">${escapeHtml(p.name)}</h3><p class="text-gray-700 text-sm mt-1">${escapeHtml(p.description?.substring(0,80)||'')}</p><div class="flex justify-between items-center mt-4"><span class="text-2xl font-bold text-amber-700">$${p.price}</span><button class="add-cart btn-gold text-black font-semibold px-4 py-2 rounded-full text-sm shadow" data-id="${p.id}"><i class="fas fa-cart-plus mr-1"></i> Add</button></div></div></div>`).join('');
         document.querySelectorAll('.add-cart').forEach(btn=>btn.onclick=()=>{let prod=products.find(p=>p.id===btn.dataset.id); if(prod) addToCart(prod);});
     }
     async function renderAdminList() {
         if(!productList) return;
-        if(!products.length) { productList.innerHTML='<div class="text-gray-500">No products</div>'; return; }
-        productList.innerHTML = products.map(p=>`<div class="flex justify-between items-center border-b py-2"><div class="flex items-center gap-2"><img src="${p.imageUrl||'https://via.placeholder.com/40'}" class="w-8 h-8 object-cover rounded"><span><strong>${escapeHtml(p.name)}</strong> - $${p.price}</span></div><div><button class="edit-prod bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded text-sm mr-1" data-id="${p.id}">Edit</button><button class="del-prod bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded text-sm" data-id="${p.id}">Del</button></div></div>`).join('');
+        if(!products.length) { productList.innerHTML='<div class="text-gray-400">No products</div>'; return; }
+        productList.innerHTML = products.map(p=>`<div class="flex justify-between items-center border-b border-amber-500/30 py-2"><div class="flex items-center gap-2"><img src="${p.imageUrl||'https://via.placeholder.com/40'}" class="w-8 h-8 object-cover rounded"><span class="text-white"><strong>${escapeHtml(p.name)}</strong> - $${p.price}</span></div><div><button class="edit-prod bg-blue-600 hover:bg-blue-500 text-white px-2 py-1 rounded text-sm mr-1" data-id="${p.id}">Edit</button><button class="del-prod bg-red-600 hover:bg-red-500 text-white px-2 py-1 rounded text-sm" data-id="${p.id}">Del</button></div></div>`).join('');
         document.querySelectorAll('.edit-prod').forEach(btn=>btn.onclick=()=>openEdit(btn.dataset.id));
         document.querySelectorAll('.del-prod').forEach(btn=>btn.onclick=async()=>{if(confirm('Delete product?')) await deleteProduct(btn.dataset.id);});
     }
@@ -307,7 +315,6 @@
         cancelBtn.classList.remove('hidden');
     }
     function resetEdit() { editingId=null; productForm.reset(); document.getElementById('productFormTitle').innerText='➕ Add New Watch'; cancelBtn.classList.add('hidden'); document.getElementById('productImage').value=''; }
-
     async function uploadToImgBB(file) {
         const formData = new FormData();
         formData.append('image', file);
@@ -317,7 +324,6 @@
         if (!data.success) throw new Error('ImgBB upload failed: ' + (data.error?.message || 'Unknown error'));
         return data.data.url;
     }
-
     productForm.onsubmit = async (e) => {
         e.preventDefault();
         const name = document.getElementById('productName').value.trim();
@@ -348,15 +354,14 @@
         finally { hideLoader(); }
     };
     cancelBtn.onclick = resetEdit;
-
     async function fetchUsers() {
         if(!userTable) return;
         try {
             const snap = await getDocs(collection(db,"users"));
-            let html = `<tr><th>Name</th><th>Email</th><th>Role</th></tr>`;
-            snap.forEach(d=>{ const data=d.data(); html+=`<tr><td class="py-1">${escapeHtml(data.firstName||'')} ${escapeHtml(data.lastName||'')}</td><td>${escapeHtml(data.email)}</td><td>${escapeHtml(data.role||'user')}</td>`; });
+            let html = `<tr><th class="text-left text-amber-400">Name</th><th class="text-left text-amber-400">Email</th><th class="text-left text-amber-400">Role</th></tr>`;
+            snap.forEach(d=>{ const data=d.data(); html+=`<tr><td class="py-1 text-white">${escapeHtml(data.firstName||'')} ${escapeHtml(data.lastName||'')}</td><td class="text-white">${escapeHtml(data.email)}</td><td class="text-white">${escapeHtml(data.role||'user')}</td>`; });
             userTable.innerHTML = html;
-            if(perfStats) perfStats.innerHTML = `<div class="p-3"><p class="font-semibold">📊 Site Performance</p><p>👥 Registered Users: ${snap.size}</p><p>⌚ Total Products: ${products.length}</p><p>🛒 Active Cart Items: ${cart.reduce((a,b)=>a+b.quantity,0)}</p></div>`;
+            if(perfStats) perfStats.innerHTML = `<div class="p-3"><p class="font-semibold text-amber-400">📊 Site Performance</p><p class="text-white">👥 Registered Users: ${snap.size}</p><p class="text-white">⌚ Total Products: ${products.length}</p><p class="text-white">🛒 Cart Items: ${cart.reduce((a,b)=>a+b.quantity,0)}</p></div>`;
         } catch(e) {}
     }
 
@@ -388,8 +393,8 @@
         if(!currentUser) return;
         try {
             const snap = await getDoc(doc(db,"users",currentUser.uid));
-            if(snap.exists()) { const d=snap.data(); userInfo.innerHTML=`<div class="p-4 bg-white rounded-xl shadow-sm"><strong>${escapeHtml(d.firstName)} ${escapeHtml(d.lastName)}</strong><br>${escapeHtml(d.email)}<br>Role: ${escapeHtml(d.role)}</div>`; contactSpan.innerText = d.email; }
-            else { userInfo.innerHTML='<p>Profile error</p>'; contactSpan.innerText = currentUser.email; }
+            if(snap.exists()) { const d=snap.data(); userInfoDiv.innerHTML=`<div class="p-4 bg-black/40 rounded-xl"><strong class="text-amber-400">${escapeHtml(d.firstName)} ${escapeHtml(d.lastName)}</strong><br class="text-white">${escapeHtml(d.email)}<br>Role: ${escapeHtml(d.role)}</div>`; contactSpan.innerText = d.email; }
+            else { userInfoDiv.innerHTML='<p>Profile error</p>'; contactSpan.innerText = currentUser.email; }
         } catch(e) { showMessage('Profile load error','error'); }
     }
     function updateNav() {
@@ -411,7 +416,7 @@
         if(currentUser && !userSec.classList.contains('hidden')) loadProfile();
     });
 
-    // Event listeners (same)
+    // Event listeners
     homeNav.onclick = showHome;
     userNav.onclick = showUser;
     adminNav.onclick = showAdmin;
@@ -427,9 +432,8 @@
     loginForm.onsubmit = (e) => { e.preventDefault(); login(document.getElementById('loginEmail').value, document.getElementById('loginPassword').value); };
     function openModal(m) { m.classList.remove('hidden'); }
     function closeModal(m) { m.classList.add('hidden'); }
-    socialDiv.innerHTML = `<a href="https://facebook.com/rollingwatch" target="_blank" class="text-blue-700 hover:text-blue-900 text-2xl transition"><i class="fab fa-facebook"></i></a> <a href="https://instagram.com/rollingwatch" target="_blank" class="text-pink-600 hover:text-pink-800 text-2xl transition"><i class="fab fa-instagram"></i></a> <a href="https://twitter.com/rollingwatch" target="_blank" class="text-sky-500 hover:text-sky-700 text-2xl transition"><i class="fab fa-twitter"></i></a>`;
+    socialDiv.innerHTML = `<a href="https://facebook.com/rollingwatch" target="_blank" class="text-blue-400 hover:text-blue-300 text-2xl transition"><i class="fab fa-facebook"></i></a> <a href="https://instagram.com/rollingwatch" target="_blank" class="text-pink-400 hover:text-pink-300 text-2xl transition"><i class="fab fa-instagram"></i></a> <a href="https://twitter.com/rollingwatch" target="_blank" class="text-sky-400 hover:text-sky-300 text-2xl transition"><i class="fab fa-twitter"></i></a>`;
     
-    // Hero buttons event
     document.getElementById('heroShopBtn')?.addEventListener('click', () => { const grid = document.getElementById('productsGrid'); if(grid) grid.scrollIntoView({ behavior: 'smooth' }); });
     document.getElementById('heroExploreBtn')?.addEventListener('click', () => { const grid = document.getElementById('productsGrid'); if(grid) grid.scrollIntoView({ behavior: 'smooth' }); });
 
@@ -438,7 +442,7 @@
     showHome();
 </script>
 
-<!-- Additional loader styles (not overwritten) -->
+<!-- Additional styles for notifications and loader (same as before, dark themed) -->
 <style>
     .notification {
         position: fixed;
@@ -449,8 +453,9 @@
         max-width: 360px;
         padding: 12px 18px;
         border-radius: 12px;
-        background: rgba(255,255,255,0.98);
-        box-shadow: 0 10px 25px -5px rgba(0,0,0,0.2);
+        background: rgba(0,0,0,0.9);
+        backdrop-filter: blur(8px);
+        box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5);
         transform: translateX(120%);
         transition: transform 0.25s ease-out;
         font-family: 'Inter', sans-serif;
@@ -460,14 +465,13 @@
         align-items: center;
         gap: 12px;
         border-left: 5px solid;
-        backdrop-filter: blur(4px);
+        color: white;
     }
-    .notification.show { transform: translateX(0); }
-    .notification-success { border-left-color: #10b981; background: #ecfdf5; color: #065f46; }
-    .notification-error { border-left-color: #ef4444; background: #fef2f2; color: #991b1b; }
-    .loader-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:10001; display:flex; justify-content:center; align-items:center; visibility:hidden; opacity:0; transition:all 0.2s; }
+    .notification-success { border-left-color: #10b981; }
+    .notification-error { border-left-color: #ef4444; }
+    .loader-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:10001; display:flex; justify-content:center; align-items:center; visibility:hidden; opacity:0; transition:all 0.2s; }
     .loader-overlay.active { visibility:visible; opacity:1; }
-    .spinner { width:50px; height:50px; border:4px solid rgba(255,255,255,0.3); border-top:4px solid #f59e0b; border-radius:50%; animation:spin 0.8s linear infinite; background:rgba(0,0,0,0.3); }
+    .spinner { width:50px; height:50px; border:4px solid rgba(255,255,255,0.3); border-top:4px solid #d4af37; border-radius:50%; animation:spin 0.8s linear infinite; }
     @keyframes spin { 100% { transform:rotate(360deg); } }
 </style>
 </body>
