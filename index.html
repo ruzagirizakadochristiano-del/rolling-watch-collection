@@ -3,82 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ROLLING WATCH COLLECTION | Premium Watches</title>
+    <title>ROLLING WATCH COLLECTION</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* Custom notification & loader styles */
-        .notification {
-            position: fixed;
-            top: 85px;
-            right: 20px;
-            z-index: 10000;
-            min-width: 260px;
-            max-width: 360px;
-            padding: 12px 18px;
-            border-radius: 12px;
-            background: white;
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.2);
-            transform: translateX(120%);
-            transition: transform 0.25s ease-out;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.85rem;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border-left: 5px solid;
-        }
+        .notification { position: fixed; top: 85px; right: 20px; z-index: 10000; min-width: 260px; max-width: 360px; padding: 12px 18px; border-radius: 12px; background: white; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.2); transform: translateX(120%); transition: transform 0.25s ease-out; font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 500; display: flex; align-items: center; gap: 12px; border-left: 5px solid; }
         .notification.show { transform: translateX(0); }
         .notification-success { border-left-color: #10b981; background: #ecfdf5; color: #065f46; }
         .notification-error { border-left-color: #ef4444; background: #fef2f2; color: #991b1b; }
         .notification-warning { border-left-color: #f59e0b; background: #fffbeb; color: #92400e; }
-        .notification-info { border-left-color: #3b82f6; background: #eff6ff; color: #1e3a8a; }
-        
-        /* Loading overlay */
-        .loader-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 10001;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            visibility: hidden;
-            opacity: 0;
-            transition: all 0.2s ease;
-        }
-        .loader-overlay.active {
-            visibility: visible;
-            opacity: 1;
-        }
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(255,255,255,0.3);
-            border-top: 4px solid #f59e0b;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            background: rgba(0,0,0,0.6);
-            padding: 10px;
-            border-radius: 50%;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .loading-inline {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 2px solid #ccc;
-            border-top-color: #f59e0b;
-            border-radius: 50%;
-            animation: spin 0.6s linear infinite;
-            margin-right: 8px;
-            vertical-align: middle;
-        }
-        button:disabled { opacity: 0.6; cursor: not-allowed; }
+        .loader-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:10001; display:flex; justify-content:center; align-items:center; visibility:hidden; opacity:0; transition:all 0.2s; }
+        .loader-overlay.active { visibility:visible; opacity:1; }
+        .spinner { width:50px; height:50px; border:4px solid rgba(255,255,255,0.3); border-top:4px solid #f59e0b; border-radius:50%; animation:spin 0.8s linear infinite; background:rgba(0,0,0,0.6); }
+        @keyframes spin { 0% { transform:rotate(0deg); } 100% { transform:rotate(360deg); } }
+        button:disabled { opacity:0.6; cursor:not-allowed; }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -157,9 +95,9 @@
 </div>
 
 <script type="module">
-    // ---------- FIREBASE CONFIG (Replace with your valid credentials) ----------
+    // 🔥 PASTE YOUR REAL FIREBASE CONFIG HERE (from Firebase Console)
     const firebaseConfig = {
-        apiKey: "AIzaSyDZxBIpI6QdN1MjK3t1N_m4BVfEEoI_SGY",
+        apiKey: "AIzaSyDZxBIpI6QdN1MjK3t1N_m4BVfEEoI_SGY",   // <-- REPLACE WITH REAL KEY
         authDomain: "rolling-watch-collection.firebaseapp.com",
         projectId: "rolling-watch-collection",
         storageBucket: "rolling-watch-collection.firebasestorage.app",
@@ -205,14 +143,13 @@
             'auth/user-not-found': 'No account found. Register first.',
             'auth/too-many-requests': 'Too many attempts. Try later.',
             'auth/network-request-failed': 'Check your internet connection.',
-            'storage/unauthorized': 'Storage permission denied. Update Firebase Storage rules.',
-            'storage/canceled': 'Upload canceled.',
-            'storage/unknown': 'Storage error. Check CORS & bucket rules.'
+            'storage/unauthorized': 'Storage permission denied. Update Storage rules to allow write.',
+            'storage/canceled': 'Upload canceled.'
         };
         return map[code] || `Error: ${code}`;
     }
 
-    // DOM elements
+    // DOM elements (same as before)
     const homeSection = document.getElementById('home-section');
     const userPanelSection = document.getElementById('user-panel-section');
     const adminPanelSection = document.getElementById('admin-panel-section');
@@ -247,7 +184,7 @@
 
     let currentUser = null, currentUserRole = 'guest', products = [], cart = [], editingId = null;
 
-    // ----- Cart (with persistence) -----
+    // ----- Cart -----
     function saveCart() { localStorage.setItem('rollingWatchCart', JSON.stringify(cart)); updateCartUI(); }
     function loadCart() { const s = localStorage.getItem('rollingWatchCart'); cart = s ? JSON.parse(s) : []; updateCartUI(); }
     function updateCartUI() {
@@ -281,7 +218,7 @@
         showMessage(`${product.name} added to cart`, 'success');
     }
 
-    // ----- Products with storage retry & loader -----
+    // ----- Products with storage upload (resilient) -----
     async function fetchProducts() {
         showLoader();
         try {
@@ -345,27 +282,22 @@
         document.getElementById('productFormTitle').innerText = '✏️ Update Watch';
         cancelEditBtn.classList.remove('hidden');
     }
-    function resetEdit() { editingId = null; productForm.reset(); document.getElementById('productFormTitle').innerText = '➕ Add New Watch'; cancelEditBtn.classList.add('hidden'); }
+    function resetEdit() { editingId = null; productForm.reset(); document.getElementById('productFormTitle').innerText = '➕ Add New Watch'; cancelEditBtn.classList.add('hidden'); document.getElementById('productImage').value = ''; }
     
-    // Improved upload with progress and retry logic for CORS
-    async function uploadImageWithRetry(file, retries = 2) {
+    // Upload with Firestore storage (no gcloud, but CORS must be set via Google Cloud Console)
+    async function uploadImage(file) {
+        const storageRef = ref(storage, `products/${Date.now()}_${file.name.replace(/\s/g, '_')}`);
+        const uploadTask = uploadBytesResumable(storageRef, file);
         return new Promise((resolve, reject) => {
-            const storageRef = ref(storage, `products/${Date.now()}_${file.name.replace(/\s/g, '_')}`);
-            const uploadTask = uploadBytesResumable(storageRef, file);
-            uploadTask.on('state_changed', 
-                (snapshot) => { /* optional progress */ },
+            uploadTask.on('state_changed', null,
                 (error) => {
-                    console.error('Upload error', error);
-                    if (retries > 0 && (error.code === 'storage/unauthorized' || error.code === 'storage/unknown')) {
-                        setTimeout(() => uploadImageWithRetry(file, retries - 1).then(resolve).catch(reject), 1000);
+                    if (error.message.includes('CORS') || error.code === 'storage/unauthorized') {
+                        reject(new Error('CORS or permissions: Please configure Storage CORS (see instructions) and set rules to allow write.'));
                     } else {
                         reject(error);
                     }
                 },
-                async () => {
-                    const url = await getDownloadURL(uploadTask.snapshot.ref);
-                    resolve(url);
-                }
+                async () => resolve(await getDownloadURL(uploadTask.snapshot.ref))
             );
         });
     }
@@ -390,13 +322,13 @@
                         const oldPath = oldData.imageUrl.split('/o/')[1]?.split('?')[0];
                         if(oldPath) try { await deleteObject(ref(storage, decodeURIComponent(oldPath))); } catch(e) {}
                     }
-                    imgUrl = await uploadImageWithRetry(imgFile);
+                    imgUrl = await uploadImage(imgFile);
                 } else imgUrl = oldData.imageUrl;
                 await updateDoc(existingRef, { name, description: desc, price, imageUrl: imgUrl });
                 showMessage('Product updated', 'success');
             } else {
                 if(!imgFile) { showMessage('Select an image', 'warning'); return; }
-                imgUrl = await uploadImageWithRetry(imgFile);
+                imgUrl = await uploadImage(imgFile);
                 await addDoc(collection(db, "products"), { name, description: desc, price, imageUrl: imgUrl, createdAt: new Date() });
                 showMessage('New product added', 'success');
             }
@@ -405,12 +337,14 @@
             if(currentUserRole === 'admin') await fetchUsers();
         } catch(err) {
             console.error(err);
-            const msg = err.code === 'storage/unauthorized' ? 'Storage permission denied. Update Firebase Storage rules to allow write.' : err.message;
-            showMessage('Save error: ' + msg, 'error');
+            if(err.message.includes('CORS')) {
+                showMessage('CORS error: Set Storage CORS in Google Cloud Console (bucket -> edit CORS)', 'error');
+            } else {
+                showMessage('Save error: ' + err.message, 'error');
+            }
         } finally {
             hideLoader();
             submitBtn.disabled = false;
-            document.getElementById('productImage').value = '';
         }
     };
     cancelEditBtn.onclick = resetEdit;
