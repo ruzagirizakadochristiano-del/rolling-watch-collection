@@ -14,7 +14,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* all existing styles remain exactly the same */
         body { background: #0a0a0a url('https://images.pexels.com/photos/190819/pexels-photo-190819.jpeg?auto=compress&cs=tinysrgb&w=1600') fixed center/cover no-repeat; background-attachment: fixed; font-family: 'Inter', system-ui, sans-serif; }
         body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: -1; }
         .hero-bg { background: linear-gradient(135deg, rgba(0,0,0,0.85), rgba(26,26,46,0.9)); backdrop-filter: blur(2px); border-bottom: 2px solid #d4af37; }
@@ -23,6 +22,8 @@
         .gold-text { background: linear-gradient(135deg, #e6c27a, #d4af37, #b8860b); -webkit-background-clip: text; background-clip: text; color: transparent; }
         .btn-gold { background: linear-gradient(135deg, #d4af37, #b8860b); transition: all 0.2s; }
         .btn-gold:hover { transform: scale(1.02); background: linear-gradient(135deg, #e6c27a, #d4af37); }
+        .btn-disabled { background: #6b7280; cursor: not-allowed; opacity: 0.6; }
+        .btn-disabled:hover { transform: none; background: #6b7280; }
         .notification { position: fixed; top: 85px; right: 20px; z-index: 10000; min-width: 260px; padding: 12px 18px; border-radius: 12px; background: rgba(0,0,0,0.9); backdrop-filter: blur(8px); transform: translateX(120%); transition: transform 0.25s; display: flex; gap: 12px; border-left: 5px solid; color: white; }
         .notification.show { transform: translateX(0); }
         .notification-success { border-left-color: #10b981; }
@@ -34,6 +35,9 @@
         .image-preview { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; margin: 4px; border: 1px solid #d4af37; }
         .detail-image-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px,1fr)); gap: 8px; }
         .detail-main-img { max-height: 400px; object-fit: contain; }
+        .stock-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+        .stock-in { background: #10b981; color: white; }
+        .stock-out { background: #ef4444; color: white; }
     </style>
 </head>
 <body>
@@ -128,6 +132,13 @@
             <input type="text" id="productName" placeholder="Watch name" class="bg-gray-900 text-white border border-amber-500/50 p-2 rounded-lg" required>
             <input type="number" step="1" id="productPrice" placeholder="Price (RWF)" class="bg-gray-900 text-white border border-amber-500/50 p-2 rounded-lg" required>
             <textarea id="productDesc" placeholder="Description" class="bg-gray-900 text-white border border-amber-500/50 p-2 rounded-lg md:col-span-2"></textarea>
+            <div class="md:col-span-2">
+                <label class="block text-sm mb-1">Product Availability</label>
+                <select id="productStock" class="bg-gray-900 text-white border border-amber-500/50 p-2 rounded-lg w-full">
+                    <option value="in">In Stock</option>
+                    <option value="out">Out of Stock</option>
+                </select>
+            </div>
             <div class="md:col-span-2"><label class="block text-sm mb-1">Product Images (multiple, max 5)</label><input type="file" id="productImages" accept="image/*" multiple class="bg-gray-900 text-white border border-amber-500/50 p-1 rounded-lg w-full"><div id="existingImagesPreview" class="flex flex-wrap gap-2 mt-2"></div><p class="text-xs text-gray-400 mt-1">Select up to 5 images. On edit, new images will replace existing ones.</p></div>
             <div class="md:col-span-2 flex gap-3"><button type="submit" class="btn-gold text-black px-5 py-2 rounded-lg font-semibold"><span id="productFormTitle">➕ Add New Watch</span></button><button type="button" id="cancelEdit" class="bg-gray-600 hover:bg-gray-500 text-white px-5 py-2 rounded-lg hidden">Cancel Edit</button></div>
         </form>
@@ -180,10 +191,22 @@
     </div>
 </div>
 
-<!-- Modals (Registration & Login - NO admin email hint) -->
-<div id="registerModal" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 hidden"><div class="bg-gradient-to-br from-gray-900 to-black rounded-2xl max-w-md w-full p-6 relative border border-amber-500/30"><button id="closeRegModal" class="absolute top-3 right-4 text-2xl text-gray-400 hover:text-amber-400">&times;</button><h3 class="text-2xl font-bold text-amber-400 mb-4">Create Account</h3><form id="regForm"><input type="text" id="regFirstName" placeholder="First Name" class="w-full bg-gray-800 text-white border border-amber-500/50 p-2 mb-3 rounded-lg" required><input type="text" id="regLastName" placeholder="Last Name" class="w-full bg-gray-800 text-white border border-amber-500/50 p-2 mb-3 rounded-lg" required><input type="email" id="regEmail" placeholder="Email" class="w-full bg-gray-800 text-white border border-amber-500/50 p-2 mb-3 rounded-lg" required><input type="password" id="regPassword" placeholder="Password (min 6 chars)" class="w-full bg-gray-800 text-white border border-amber-500/50 p-2 mb-3 rounded-lg" required><input type="password" id="regConfirmPassword" placeholder="Confirm Password" class="w-full bg-gray-800 text-white border border-amber-500/50 p-2 mb-4 rounded-lg" required><button type="submit" class="w-full btn-gold text-black py-2 rounded-full font-semibold">Register</button></form></div></div>
+<!-- Login Required Modal -->
+<div id="loginRequiredModal" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 hidden">
+    <div class="bg-gradient-to-br from-gray-900 to-black rounded-2xl max-w-md w-full p-6 relative border border-amber-500/30 text-center">
+        <button id="closeLoginRequiredModal" class="absolute top-3 right-4 text-2xl text-gray-400 hover:text-amber-400">&times;</button>
+        <i class="fas fa-lock text-5xl text-amber-400 mb-3"></i>
+        <h3 class="text-2xl font-bold text-white mb-2">Login Required</h3>
+        <p class="text-gray-300 mb-6">Please log in or create an account to place an order.</p>
+        <div class="flex gap-4 justify-center">
+            <button id="loginRequiredLoginBtn" class="btn-gold text-black px-5 py-2 rounded-full font-semibold">Login</button>
+            <button id="loginRequiredRegisterBtn" class="border border-amber-500 text-white px-5 py-2 rounded-full font-semibold hover:bg-white/10">Register</button>
+        </div>
+    </div>
+</div>
 
-<!-- LOGIN MODAL - No admin email hint, just clean fields -->
+<!-- Modals -->
+<div id="registerModal" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 hidden"><div class="bg-gradient-to-br from-gray-900 to-black rounded-2xl max-w-md w-full p-6 relative border border-amber-500/30"><button id="closeRegModal" class="absolute top-3 right-4 text-2xl text-gray-400 hover:text-amber-400">&times;</button><h3 class="text-2xl font-bold text-amber-400 mb-4">Create Account</h3><form id="regForm"><input type="text" id="regFirstName" placeholder="First Name" class="w-full bg-gray-800 text-white border border-amber-500/50 p-2 mb-3 rounded-lg" required><input type="text" id="regLastName" placeholder="Last Name" class="w-full bg-gray-800 text-white border border-amber-500/50 p-2 mb-3 rounded-lg" required><input type="email" id="regEmail" placeholder="Email" class="w-full bg-gray-800 text-white border border-amber-500/50 p-2 mb-3 rounded-lg" required><input type="password" id="regPassword" placeholder="Password (min 6 chars)" class="w-full bg-gray-800 text-white border border-amber-500/50 p-2 mb-3 rounded-lg" required><input type="password" id="regConfirmPassword" placeholder="Confirm Password" class="w-full bg-gray-800 text-white border border-amber-500/50 p-2 mb-4 rounded-lg" required><button type="submit" class="w-full btn-gold text-black py-2 rounded-full font-semibold">Register</button></form></div></div>
 <div id="loginModal" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 hidden"><div class="bg-gradient-to-br from-gray-900 to-black rounded-2xl max-w-md w-full p-6 relative border border-amber-500/30"><button id="closeLoginModal" class="absolute top-3 right-4 text-2xl text-gray-400 hover:text-amber-400">&times;</button><h3 class="text-2xl font-bold text-amber-400 mb-4">Welcome Back</h3><form id="loginForm"><input type="email" id="loginEmail" placeholder="Email Address" class="w-full bg-gray-800 text-white border border-amber-500/50 p-2 mb-3 rounded-lg" required><input type="password" id="loginPassword" placeholder="Password" class="w-full bg-gray-800 text-white border border-amber-500/50 p-2 mb-4 rounded-lg" required><button type="submit" class="w-full btn-gold text-black py-2 rounded-full font-semibold">Login</button></form><p class="text-center text-gray-400 text-sm mt-4">Don't have an account? <button id="switchToRegister" class="text-amber-400 hover:underline">Register here</button></p></div></div>
 
 <script type="module">
@@ -265,6 +288,7 @@
         productName: document.getElementById('productName'),
         productPrice: document.getElementById('productPrice'),
         productDesc: document.getElementById('productDesc'),
+        productStock: document.getElementById('productStock'),
         productImages: document.getElementById('productImages'),
         productFormTitle: document.getElementById('productFormTitle'),
         searchInput: document.getElementById('searchInput'),
@@ -292,14 +316,19 @@
         orderProductDisplay: document.getElementById('orderProductDisplay'),
         orderPriceDisplay: document.getElementById('orderPriceDisplay'),
         ordersList: document.getElementById('ordersList'),
+        loginRequiredModal: document.getElementById('loginRequiredModal'),
+        closeLoginRequiredModal: document.getElementById('closeLoginRequiredModal'),
+        loginRequiredLoginBtn: document.getElementById('loginRequiredLoginBtn'),
+        loginRequiredRegisterBtn: document.getElementById('loginRequiredRegisterBtn'),
         switchToRegister: document.getElementById('switchToRegister')
     };
 
     let currentUser = null, userRole = 'guest', allProducts = [], filteredProducts = [], cart = [], editingId = null;
     let recentlyViewedIds = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
     let contactInfo = { instagramUrl: '', phoneNumber: '' };
+    let pendingProduct = null;
 
-    // ---------- Contact Info (unchanged) ----------
+    // ---------- Contact Info ----------
     async function loadContactInfo() {
         try {
             const docRef = doc(db, "settings", "contactInfo");
@@ -329,7 +358,7 @@
         if (dom.adminPhoneNumber) dom.adminPhoneNumber.value = contactInfo.phoneNumber;
     }
 
-    // Cart functions (unchanged)
+    // Cart functions
     function saveCart() { localStorage.setItem('rollingWatchCart', JSON.stringify(cart)); updateCartUI(); }
     function loadCart() { cart = JSON.parse(localStorage.getItem('rollingWatchCart') || '[]'); updateCartUI(); }
     function updateCartUI() {
@@ -358,7 +387,17 @@
         });
     }
 
+    // Order functions with login check
     async function initiateOrder(product) {
+        if (!currentUser) {
+            pendingProduct = product;
+            dom.loginRequiredModal.classList.remove('hidden');
+            return;
+        }
+        if (product.stock === 'out') {
+            showMessage("This product is currently out of stock!", "warning");
+            return;
+        }
         dom.orderProductId.value = product.id;
         dom.orderProductName.value = product.name;
         dom.orderProductPrice.value = product.price;
@@ -407,6 +446,8 @@
     function showProductDetail(productId) {
         const product = allProducts.find(p => p.id === productId);
         if (!product) return;
+        const stockBadge = product.stock === 'in' ? '<span class="stock-badge stock-in"><i class="fas fa-check-circle mr-1"></i>In Stock</span>' : '<span class="stock-badge stock-out"><i class="fas fa-times-circle mr-1"></i>Out of Stock</span>';
+        const orderBtn = product.stock === 'in' ? `<button class="add-to-cart-detail btn-gold text-black px-6 py-2 rounded-full font-semibold mt-6" data-id="${product.id}"><i class="fas fa-cart-plus mr-2"></i>Order Now</button>` : `<button class="btn-disabled text-white px-6 py-2 rounded-full font-semibold mt-6" disabled><i class="fas fa-times-circle mr-2"></i>Out of Stock</button>`;
         const imagesHtml = product.images && product.images.length ? 
             `<div class="detail-image-grid">${product.images.map(img => `<img src="${img}" class="detail-main-img rounded-lg shadow-md">`).join('')}</div>` :
             `<img src="https://via.placeholder.com/400" class="detail-main-img rounded-lg">`;
@@ -415,14 +456,17 @@
                 <div>${imagesHtml}</div>
                 <div><h2 class="text-3xl font-bold gold-text">${escapeHtml(product.name)}</h2>
                 <p class="text-2xl font-bold text-amber-400 mt-2">${product.price.toLocaleString()} RWF</p>
+                <div class="mt-2">${stockBadge}</div>
                 <p class="text-gray-300 mt-4">${escapeHtml(product.description || 'No description available')}</p>
-                <button class="add-to-cart-detail btn-gold text-black px-6 py-2 rounded-full font-semibold mt-6" data-id="${product.id}"><i class="fas fa-cart-plus mr-2"></i>Order Now</button></div>
+                ${orderBtn}</div>
             </div>
         `;
-        dom.detailContent.querySelector('.add-to-cart-detail')?.addEventListener('click', (e) => {
-            e.stopPropagation();
-            initiateOrder(product);
-        });
+        if (product.stock === 'in') {
+            dom.detailContent.querySelector('.add-to-cart-detail')?.addEventListener('click', (e) => {
+                e.stopPropagation();
+                initiateOrder(product);
+            });
+        }
         const related = allProducts.filter(p => p.id !== product.id).sort(() => 0.5 - Math.random()).slice(0, 3);
         dom.relatedProductsGrid.innerHTML = related.map(p => productCardTemplate(p, true)).join('');
         dom.relatedProductsGrid.querySelectorAll('.product-card').forEach(card => {
@@ -438,13 +482,15 @@
 
     function productCardTemplate(p, forDetail = false) {
         const img = (p.images && p.images.length) ? p.images[0] : 'https://via.placeholder.com/300';
-        return `<div class="product-card bg-white/95 rounded-2xl shadow-xl overflow-hidden cursor-pointer" data-id="${p.id}"><img src="${img}" class="h-56 w-full object-cover" loading="lazy"><div class="p-4"><h3 class="font-bold text-xl text-gray-900">${escapeHtml(p.name)}</h3><p class="text-gray-700 text-sm">${escapeHtml(p.description?.substring(0,80) || '')}</p><div class="flex justify-between items-center mt-4"><span class="text-2xl font-bold text-amber-700">${p.price.toLocaleString()} RWF</span><button class="add-cart-trigger btn-gold text-black font-semibold px-4 py-2 rounded-full text-sm" data-id="${p.id}"><i class="fas fa-cart-plus mr-1"></i> Order</button></div></div></div>`;
+        const stockBadge = p.stock === 'in' ? '<span class="absolute top-2 right-2 stock-badge stock-in text-xs">In Stock</span>' : '<span class="absolute top-2 right-2 stock-badge stock-out text-xs">Out of Stock</span>';
+        const orderBtn = p.stock === 'in' ? `<button class="add-cart-trigger btn-gold text-black font-semibold px-4 py-2 rounded-full text-sm" data-id="${p.id}"><i class="fas fa-cart-plus mr-1"></i> Order</button>` : `<button class="bg-gray-500 text-white font-semibold px-4 py-2 rounded-full text-sm cursor-not-allowed" disabled><i class="fas fa-times-circle mr-1"></i> Out of Stock</button>`;
+        return `<div class="product-card bg-white/95 rounded-2xl shadow-xl overflow-hidden cursor-pointer relative" data-id="${p.id}">${stockBadge}<img src="${img}" class="h-56 w-full object-cover" loading="lazy"><div class="p-4"><h3 class="font-bold text-xl text-gray-900">${escapeHtml(p.name)}</h3><p class="text-gray-700 text-sm">${escapeHtml(p.description?.substring(0,80) || '')}</p><div class="flex justify-between items-center mt-4"><span class="text-2xl font-bold text-amber-700">${p.price.toLocaleString()} RWF</span>${orderBtn}</div></div></div>`;
     }
 
     function attachProductEvents(container) {
         container.querySelectorAll('.product-card').forEach(card => {
             card.onclick = (e) => {
-                if (e.target.classList.contains('add-cart-trigger') || e.target.closest('.add-cart-trigger')) return;
+                if (e.target.classList.contains('add-cart-trigger') || e.target.closest('.add-cart-trigger') || e.target.disabled) return;
                 const id = card.dataset.id;
                 showProductDetail(id);
             };
@@ -453,7 +499,8 @@
             btn.onclick = (e) => {
                 e.stopPropagation();
                 const prod = allProducts.find(p => p.id === btn.dataset.id);
-                if (prod) initiateOrder(prod);
+                if (prod && prod.stock === 'in') initiateOrder(prod);
+                else if (prod && prod.stock === 'out') showMessage("This product is out of stock!", "warning");
             };
         });
     }
@@ -500,7 +547,7 @@
     }
     function refreshAll() { applyFiltersAndRender(); renderRecentlyViewed(); renderRecommendations(); }
 
-    // Admin: product CRUD (unchanged)
+    // Admin: product CRUD with stock
     async function uploadMultipleImages(files) {
         const urls = [];
         for (const file of files) {
@@ -516,7 +563,7 @@
         showLoader();
         try {
             const snap = await getDocs(collection(db, "products"));
-            allProducts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            allProducts = snap.docs.map(d => ({ id: d.id, ...d.data(), stock: d.data().stock || 'in' }));
             refreshAll();
             if (userRole === 'admin') { await renderAdminList(); await fetchUsers(); await fetchOrders(); }
         } catch(e) { showMessage('Failed to load products', 'error'); }
@@ -527,7 +574,7 @@
         if (!allProducts.length) { dom.productList.innerHTML = '<div class="text-gray-400">No products</div>'; return; }
         dom.productList.innerHTML = allProducts.map(p => `
             <div class="flex justify-between items-center border-b border-amber-500/30 py-2">
-                <div class="flex items-center gap-2"><img src="${p.images?.[0] || 'https://via.placeholder.com/40'}" class="w-8 h-8 object-cover rounded"><span><strong>${escapeHtml(p.name)}</strong> - ${p.price.toLocaleString()} RWF</span></div>
+                <div class="flex items-center gap-2"><img src="${p.images?.[0] || 'https://via.placeholder.com/40'}" class="w-8 h-8 object-cover rounded"><span><strong>${escapeHtml(p.name)}</strong> - ${p.price.toLocaleString()} RWF</span><span class="ml-2 ${p.stock === 'in' ? 'text-green-400' : 'text-red-400'} text-xs">${p.stock === 'in' ? 'In Stock' : 'Out of Stock'}</span></div>
                 <div><button class="edit-prod bg-blue-600 px-2 py-1 rounded text-sm mr-1" data-id="${p.id}">Edit</button><button class="del-prod bg-red-600 px-2 py-1 rounded text-sm" data-id="${p.id}">Del</button></div>
             </div>`).join('');
         dom.productList.querySelectorAll('.edit-prod').forEach(btn => btn.onclick = () => openEdit(btn.dataset.id));
@@ -550,15 +597,16 @@
         dom.productName.value = prod.name;
         dom.productDesc.value = prod.description || '';
         dom.productPrice.value = prod.price;
+        dom.productStock.value = prod.stock || 'in';
         dom.productFormTitle.innerText = '✏️ Update Watch';
         dom.cancelEdit.classList.remove('hidden');
         const previewDiv = document.getElementById('existingImagesPreview');
         if (previewDiv && prod.images) previewDiv.innerHTML = prod.images.map(url => `<img src="${url}" class="image-preview">`).join('');
     }
-    function resetEdit() { editingId = null; dom.productForm.reset(); dom.productFormTitle.innerText = '➕ Add New Watch'; dom.cancelEdit.classList.add('hidden'); document.getElementById('existingImagesPreview').innerHTML = ''; }
+    function resetEdit() { editingId = null; dom.productForm.reset(); dom.productStock.value = 'in'; dom.productFormTitle.innerText = '➕ Add New Watch'; dom.cancelEdit.classList.add('hidden'); document.getElementById('existingImagesPreview').innerHTML = ''; }
     dom.productForm.onsubmit = async (e) => {
         e.preventDefault();
-        const name = dom.productName.value.trim(), desc = dom.productDesc.value.trim(), price = parseInt(dom.productPrice.value);
+        const name = dom.productName.value.trim(), desc = dom.productDesc.value.trim(), price = parseInt(dom.productPrice.value), stock = dom.productStock.value;
         const files = Array.from(dom.productImages.files);
         if (!name || isNaN(price)) { showMessage('Name and valid price required', 'warning'); return; }
         showLoader();
@@ -568,12 +616,12 @@
                 const existingRef = doc(db, "products", editingId);
                 if (files.length) images = await uploadMultipleImages(files);
                 else { const old = (await getDoc(existingRef)).data(); images = old.images || []; }
-                await updateDoc(existingRef, { name, description: desc, price, images, updatedAt: new Date() });
+                await updateDoc(existingRef, { name, description: desc, price, images, stock, updatedAt: new Date() });
                 showMessage('Product updated', 'success');
             } else {
                 if (!files.length) { showMessage('Select at least one image', 'warning'); return; }
                 images = await uploadMultipleImages(files);
-                await addDoc(collection(db, "products"), { name, description: desc, price, images, createdAt: new Date() });
+                await addDoc(collection(db, "products"), { name, description: desc, price, images, stock, createdAt: new Date() });
                 showMessage('Product added', 'success');
             }
             resetEdit();
@@ -589,7 +637,7 @@
         try {
             const snap = await getDocs(collection(db, "users"));
             let html = `<tr><th class="text-left text-amber-400">Name</th><th class="text-left text-amber-400">Email</th><th class="text-left text-amber-400">Role</th></tr>`;
-            snap.forEach(d => { const data = d.data(); html += `<tr><td class="py-1">${escapeHtml(data.firstName||'')} ${escapeHtml(data.lastName||'')}</td><td class="py-1">${escapeHtml(data.email)}</td><td class="py-1">${escapeHtml(data.role||'user')}</td></tr>`; });
+            snap.forEach(d => { const data = d.data(); html += `<tr><td class="py-1">${escapeHtml(data.firstName||'')} ${escapeHtml(data.lastName||'')}</td><td class="py-1">${escapeHtml(data.email)}</td><td class="py-1">${escapeHtml(data.role||'user')}</td>`; });
             dom.userTable.innerHTML = html;
             if (dom.perfStats) dom.perfStats.innerHTML = `<div class="p-3"><p class="font-semibold text-amber-400">📊 Performance</p><p>Users: ${snap.size}</p><p>Products: ${allProducts.length}</p><p>Cart items: ${cart.reduce((a,b)=>a+b.quantity,0)}</p></div>`;
         } catch(e) { console.warn(e); }
@@ -619,6 +667,10 @@
             await setDoc(doc(db, "users", cred.user.uid), { firstName: first, lastName: last, email, role, createdAt: new Date() });
             showMessage(`Welcome ${first}!`, 'success');
             closeModal(dom.regModal);
+            if (pendingProduct) {
+                initiateOrder(pendingProduct);
+                pendingProduct = null;
+            }
         } catch(err) { showMessage(getFriendlyError(err.code), 'error'); }
         finally { hideLoader(); }
     }
@@ -628,10 +680,14 @@
             await signInWithEmailAndPassword(auth, email, pwd);
             showMessage('Login success', 'success');
             closeModal(dom.loginModal);
+            if (pendingProduct) {
+                initiateOrder(pendingProduct);
+                pendingProduct = null;
+            }
         } catch(err) { showMessage(getFriendlyError(err.code), 'error'); }
         finally { hideLoader(); }
     }
-    function logout() { signOut(auth); showMessage('Logged out', 'info'); showHome(); }
+    function logout() { signOut(auth); showMessage('Logged out', 'info'); showHome(); pendingProduct = null; }
 
     // Navigation
     function showHome() {
@@ -709,6 +765,17 @@
     dom.backToHomeBtn.onclick = showHome;
     dom.closeCustomerModal.onclick = () => dom.customerModal.classList.add('hidden');
     dom.customerOrderForm.onsubmit = submitOrderAndAddToCart;
+
+    // Login required modal handlers
+    dom.closeLoginRequiredModal.onclick = () => { dom.loginRequiredModal.classList.add('hidden'); pendingProduct = null; };
+    dom.loginRequiredLoginBtn.onclick = () => {
+        dom.loginRequiredModal.classList.add('hidden');
+        openModal(dom.loginModal);
+    };
+    dom.loginRequiredRegisterBtn.onclick = () => {
+        dom.loginRequiredModal.classList.add('hidden');
+        openModal(dom.regModal);
+    };
 
     // Switch between login and register modals
     if (dom.switchToRegister) {
