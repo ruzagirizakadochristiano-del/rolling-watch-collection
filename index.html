@@ -38,6 +38,8 @@
         .stock-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; }
         .stock-in { background: #10b981; color: white; }
         .stock-out { background: #ef4444; color: white; }
+        .quantity-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; background: #3b82f6; color: white; margin-left: 8px; }
+        .price-large { font-size: 2rem; font-weight: bold; color: #d4af37; }
     </style>
 </head>
 <body>
@@ -107,8 +109,8 @@
     <button id="backToHomeBtn" class="btn-gold text-black px-4 py-2 rounded-lg mb-6 inline-block"><i class="fas fa-arrow-left mr-2"></i>Back to Collection</button>
     <div class="bg-black/70 backdrop-blur-md rounded-2xl p-6 border border-amber-500/30 text-white">
         <div id="detailContent"></div>
-        <div class="mt-8"><h3 class="text-2xl font-bold gold-text mb-4">Related Products</h3><div id="relatedProductsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div></div>
     </div>
+    <div class="mt-8"><h3 class="text-2xl font-bold gold-text mb-4"><i class="fas fa-link mr-2"></i>Related Products</h3><div id="relatedProductsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div></div>
 </section>
 
 <!-- Recommendations & Recently Viewed -->
@@ -132,12 +134,16 @@
             <input type="text" id="productName" placeholder="Watch name" class="bg-gray-900 text-white border border-amber-500/50 p-2 rounded-lg" required>
             <input type="number" step="1" id="productPrice" placeholder="Price (RWF)" class="bg-gray-900 text-white border border-amber-500/50 p-2 rounded-lg" required>
             <textarea id="productDesc" placeholder="Description" class="bg-gray-900 text-white border border-amber-500/50 p-2 rounded-lg md:col-span-2"></textarea>
-            <div class="md:col-span-2">
-                <label class="block text-sm mb-1">Product Availability</label>
+            <div>
+                <label class="block text-sm mb-1">Stock Status</label>
                 <select id="productStock" class="bg-gray-900 text-white border border-amber-500/50 p-2 rounded-lg w-full">
                     <option value="in">In Stock</option>
                     <option value="out">Out of Stock</option>
                 </select>
+            </div>
+            <div>
+                <label class="block text-sm mb-1">Quantity Available</label>
+                <input type="number" id="productQuantity" min="0" value="1" class="bg-gray-900 text-white border border-amber-500/50 p-2 rounded-lg w-full">
             </div>
             <div class="md:col-span-2"><label class="block text-sm mb-1">Product Images (multiple, max 5)</label><input type="file" id="productImages" accept="image/*" multiple class="bg-gray-900 text-white border border-amber-500/50 p-1 rounded-lg w-full"><div id="existingImagesPreview" class="flex flex-wrap gap-2 mt-2"></div><p class="text-xs text-gray-400 mt-1">Select up to 5 images. On edit, new images will replace existing ones.</p></div>
             <div class="md:col-span-2 flex gap-3"><button type="submit" class="btn-gold text-black px-5 py-2 rounded-lg font-semibold"><span id="productFormTitle">➕ Add New Watch</span></button><button type="button" id="cancelEdit" class="bg-gray-600 hover:bg-gray-500 text-white px-5 py-2 rounded-lg hidden">Cancel Edit</button></div>
@@ -177,6 +183,7 @@
             <input type="hidden" id="orderProductId">
             <input type="hidden" id="orderProductName">
             <input type="hidden" id="orderProductPrice">
+            <input type="hidden" id="orderMaxQuantity">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <input type="text" id="orderFullName" placeholder="Full Name *" required class="bg-gray-800 text-white border border-amber-500/50 p-2 rounded-lg">
                 <input type="email" id="orderEmail" placeholder="Email Address *" required class="bg-gray-800 text-white border border-amber-500/50 p-2 rounded-lg">
@@ -185,7 +192,7 @@
                 <input type="text" id="orderLocation" placeholder="Delivery Location (City/Area) *" required class="bg-gray-800 text-white border border-amber-500/50 p-2 rounded-lg md:col-span-2">
                 <textarea id="orderNotes" placeholder="Additional Notes (optional)" rows="3" class="bg-gray-800 text-white border border-amber-500/50 p-2 rounded-lg md:col-span-2"></textarea>
             </div>
-            <div class="mt-4 p-3 bg-black/50 rounded-lg"><p class="text-white">Product: <span id="orderProductDisplay"></span></p><p class="text-white">Price per unit: <span id="orderPriceDisplay"></span> RWF</p></div>
+            <div class="mt-4 p-3 bg-black/50 rounded-lg"><p class="text-white">Product: <span id="orderProductDisplay"></span></p><p class="text-white">Price per unit: <span id="orderPriceDisplay"></span> RWF</p><p class="text-white">Available: <span id="orderAvailableDisplay"></span></p></div>
             <button type="submit" class="w-full btn-gold text-black py-2 rounded-full font-semibold mt-4">Submit Order & Add to Cart</button>
         </form>
     </div>
@@ -289,6 +296,7 @@
         productPrice: document.getElementById('productPrice'),
         productDesc: document.getElementById('productDesc'),
         productStock: document.getElementById('productStock'),
+        productQuantity: document.getElementById('productQuantity'),
         productImages: document.getElementById('productImages'),
         productFormTitle: document.getElementById('productFormTitle'),
         searchInput: document.getElementById('searchInput'),
@@ -313,8 +321,10 @@
         orderProductId: document.getElementById('orderProductId'),
         orderProductName: document.getElementById('orderProductName'),
         orderProductPrice: document.getElementById('orderProductPrice'),
+        orderMaxQuantity: document.getElementById('orderMaxQuantity'),
         orderProductDisplay: document.getElementById('orderProductDisplay'),
         orderPriceDisplay: document.getElementById('orderPriceDisplay'),
+        orderAvailableDisplay: document.getElementById('orderAvailableDisplay'),
         ordersList: document.getElementById('ordersList'),
         loginRequiredModal: document.getElementById('loginRequiredModal'),
         closeLoginRequiredModal: document.getElementById('closeLoginRequiredModal'),
@@ -387,22 +397,30 @@
         });
     }
 
-    // Order functions with login check
+    // Order functions with login check and quantity validation
     async function initiateOrder(product) {
         if (!currentUser) {
             pendingProduct = product;
             dom.loginRequiredModal.classList.remove('hidden');
             return;
         }
-        if (product.stock === 'out') {
+        if (product.stock === 'out' || product.quantity <= 0) {
             showMessage("This product is currently out of stock!", "warning");
             return;
         }
         dom.orderProductId.value = product.id;
         dom.orderProductName.value = product.name;
         dom.orderProductPrice.value = product.price;
+        dom.orderMaxQuantity.value = product.quantity;
         dom.orderProductDisplay.innerText = product.name;
         dom.orderPriceDisplay.innerText = product.price.toLocaleString();
+        dom.orderAvailableDisplay.innerText = product.quantity;
+        
+        // Set max attribute on quantity input
+        const qtyInput = document.getElementById('orderQuantity');
+        qtyInput.max = product.quantity;
+        qtyInput.value = 1;
+        
         dom.customerModal.classList.remove('hidden');
     }
 
@@ -411,16 +429,24 @@
         const fullName = document.getElementById('orderFullName').value.trim();
         const email = document.getElementById('orderEmail').value.trim();
         const phone = document.getElementById('orderPhone').value.trim();
-        const quantity = parseInt(document.getElementById('orderQuantity').value);
+        let quantity = parseInt(document.getElementById('orderQuantity').value);
         const location = document.getElementById('orderLocation').value.trim();
         const notes = document.getElementById('orderNotes').value.trim();
         const productId = dom.orderProductId.value;
         const productName = dom.orderProductName.value;
         const productPrice = parseFloat(dom.orderProductPrice.value);
+        const maxQuantity = parseInt(dom.orderMaxQuantity.value);
+        
         if (!fullName || !email || !phone || !quantity || !location) {
             showMessage("Please fill all required fields", "warning");
             return;
         }
+        
+        if (quantity > maxQuantity) {
+            showMessage(`Only ${maxQuantity} items available in stock!`, "warning");
+            return;
+        }
+        
         showLoader();
         try {
             await addDoc(collection(db, "orders"), {
@@ -428,6 +454,21 @@
                 createdAt: new Date(),
                 totalPrice: productPrice * quantity
             });
+            
+            // Update product quantity in database
+            const productRef = doc(db, "products", productId);
+            const newQuantity = maxQuantity - quantity;
+            await updateDoc(productRef, { quantity: newQuantity });
+            
+            // Update local product data
+            const productIndex = allProducts.findIndex(p => p.id === productId);
+            if (productIndex !== -1) {
+                allProducts[productIndex].quantity = newQuantity;
+                if (newQuantity <= 0) {
+                    allProducts[productIndex].stock = 'out';
+                }
+            }
+            
             let existing = cart.find(i => i.id === productId);
             if (existing) existing.quantity += quantity;
             else cart.push({ id: productId, name: productName, price: productPrice, images: (allProducts.find(p=>p.id===productId)?.images) || [], quantity: quantity });
@@ -435,6 +476,8 @@
             dom.customerModal.classList.add('hidden');
             dom.customerOrderForm.reset();
             showMessage(`Order placed! ${productName} added to cart.`, "success");
+            refreshAll();
+            if (userRole === 'admin') await renderAdminList();
         } catch (err) {
             showMessage("Order failed: " + err.message, "error");
         } finally {
@@ -446,32 +489,46 @@
     function showProductDetail(productId) {
         const product = allProducts.find(p => p.id === productId);
         if (!product) return;
-        const stockBadge = product.stock === 'in' ? '<span class="stock-badge stock-in"><i class="fas fa-check-circle mr-1"></i>In Stock</span>' : '<span class="stock-badge stock-out"><i class="fas fa-times-circle mr-1"></i>Out of Stock</span>';
-        const orderBtn = product.stock === 'in' ? `<button class="add-to-cart-detail btn-gold text-black px-6 py-2 rounded-full font-semibold mt-6" data-id="${product.id}"><i class="fas fa-cart-plus mr-2"></i>Order Now</button>` : `<button class="btn-disabled text-white px-6 py-2 rounded-full font-semibold mt-6" disabled><i class="fas fa-times-circle mr-2"></i>Out of Stock</button>`;
+        
+        const stockBadge = (product.stock === 'in' && product.quantity > 0) ? 
+            `<span class="stock-badge stock-in"><i class="fas fa-check-circle mr-1"></i>In Stock</span>
+             <span class="quantity-badge"><i class="fas fa-boxes mr-1"></i>${product.quantity} available</span>` : 
+            '<span class="stock-badge stock-out"><i class="fas fa-times-circle mr-1"></i>Out of Stock</span>';
+        
+        const orderBtn = (product.stock === 'in' && product.quantity > 0) ? 
+            `<button class="add-to-cart-detail btn-gold text-black px-6 py-2 rounded-full font-semibold mt-6" data-id="${product.id}"><i class="fas fa-cart-plus mr-2"></i>Order Now</button>` : 
+            `<button class="btn-disabled text-white px-6 py-2 rounded-full font-semibold mt-6" disabled><i class="fas fa-times-circle mr-2"></i>Out of Stock</button>`;
+        
         const imagesHtml = product.images && product.images.length ? 
             `<div class="detail-image-grid">${product.images.map(img => `<img src="${img}" class="detail-main-img rounded-lg shadow-md">`).join('')}</div>` :
             `<img src="https://via.placeholder.com/400" class="detail-main-img rounded-lg">`;
+        
         dom.detailContent.innerHTML = `
             <div class="grid md:grid-cols-2 gap-8">
                 <div>${imagesHtml}</div>
-                <div><h2 class="text-3xl font-bold gold-text">${escapeHtml(product.name)}</h2>
-                <p class="text-2xl font-bold text-amber-400 mt-2">${product.price.toLocaleString()} RWF</p>
-                <div class="mt-2">${stockBadge}</div>
-                <p class="text-gray-300 mt-4">${escapeHtml(product.description || 'No description available')}</p>
-                ${orderBtn}</div>
+                <div>
+                    <h2 class="text-3xl font-bold gold-text">${escapeHtml(product.name)}</h2>
+                    <p class="price-large mt-2">${product.price.toLocaleString()} RWF</p>
+                    <div class="mt-3">${stockBadge}</div>
+                    <p class="text-gray-300 mt-4">${escapeHtml(product.description || 'No description available')}</p>
+                    ${orderBtn}
+                </div>
             </div>
         `;
-        if (product.stock === 'in') {
+        
+        if (product.stock === 'in' && product.quantity > 0) {
             dom.detailContent.querySelector('.add-to-cart-detail')?.addEventListener('click', (e) => {
                 e.stopPropagation();
                 initiateOrder(product);
             });
         }
+        
         const related = allProducts.filter(p => p.id !== product.id).sort(() => 0.5 - Math.random()).slice(0, 3);
         dom.relatedProductsGrid.innerHTML = related.map(p => productCardTemplate(p, true)).join('');
         dom.relatedProductsGrid.querySelectorAll('.product-card').forEach(card => {
             card.onclick = () => showProductDetail(card.dataset.id);
         });
+        
         dom.homeSec.classList.add('hidden');
         dom.userSec.classList.add('hidden');
         dom.adminSec.classList.add('hidden');
@@ -482,8 +539,14 @@
 
     function productCardTemplate(p, forDetail = false) {
         const img = (p.images && p.images.length) ? p.images[0] : 'https://via.placeholder.com/300';
-        const stockBadge = p.stock === 'in' ? '<span class="absolute top-2 right-2 stock-badge stock-in text-xs">In Stock</span>' : '<span class="absolute top-2 right-2 stock-badge stock-out text-xs">Out of Stock</span>';
-        const orderBtn = p.stock === 'in' ? `<button class="add-cart-trigger btn-gold text-black font-semibold px-4 py-2 rounded-full text-sm" data-id="${p.id}"><i class="fas fa-cart-plus mr-1"></i> Order</button>` : `<button class="bg-gray-500 text-white font-semibold px-4 py-2 rounded-full text-sm cursor-not-allowed" disabled><i class="fas fa-times-circle mr-1"></i> Out of Stock</button>`;
+        const hasStock = (p.stock === 'in' && p.quantity > 0);
+        const stockBadge = hasStock ? 
+            `<span class="absolute top-2 right-2 stock-badge stock-in text-xs">${p.quantity} left</span>` : 
+            '<span class="absolute top-2 right-2 stock-badge stock-out text-xs">Out of Stock</span>';
+        const orderBtn = hasStock ? 
+            `<button class="add-cart-trigger btn-gold text-black font-semibold px-4 py-2 rounded-full text-sm" data-id="${p.id}"><i class="fas fa-cart-plus mr-1"></i> Order</button>` : 
+            `<button class="bg-gray-500 text-white font-semibold px-4 py-2 rounded-full text-sm cursor-not-allowed" disabled><i class="fas fa-times-circle mr-1"></i> Out of Stock</button>`;
+        
         return `<div class="product-card bg-white/95 rounded-2xl shadow-xl overflow-hidden cursor-pointer relative" data-id="${p.id}">${stockBadge}<img src="${img}" class="h-56 w-full object-cover" loading="lazy"><div class="p-4"><h3 class="font-bold text-xl text-gray-900">${escapeHtml(p.name)}</h3><p class="text-gray-700 text-sm">${escapeHtml(p.description?.substring(0,80) || '')}</p><div class="flex justify-between items-center mt-4"><span class="text-2xl font-bold text-amber-700">${p.price.toLocaleString()} RWF</span>${orderBtn}</div></div></div>`;
     }
 
@@ -492,15 +555,16 @@
             card.onclick = (e) => {
                 if (e.target.classList.contains('add-cart-trigger') || e.target.closest('.add-cart-trigger') || e.target.disabled) return;
                 const id = card.dataset.id;
-                showProductDetail(id);
+                const product = allProducts.find(p => p.id === id);
+                if (product) showProductDetail(id);
             };
         });
         container.querySelectorAll('.add-cart-trigger').forEach(btn => {
             btn.onclick = (e) => {
                 e.stopPropagation();
                 const prod = allProducts.find(p => p.id === btn.dataset.id);
-                if (prod && prod.stock === 'in') initiateOrder(prod);
-                else if (prod && prod.stock === 'out') showMessage("This product is out of stock!", "warning");
+                if (prod && prod.stock === 'in' && prod.quantity > 0) initiateOrder(prod);
+                else if (prod && (prod.stock === 'out' || prod.quantity <= 0)) showMessage("This product is out of stock!", "warning");
             };
         });
     }
@@ -512,12 +576,14 @@
         localStorage.setItem('recentlyViewed', JSON.stringify(recentlyViewedIds));
         renderRecentlyViewed();
     }
+    
     function renderRecentlyViewed() {
         if (!dom.recentlyViewedGrid) return;
         const recent = allProducts.filter(p => recentlyViewedIds.includes(p.id));
         dom.recentlyViewedGrid.innerHTML = recent.length ? recent.map(p => productCardTemplate(p)).join('') : '<div class="col-span-full text-center text-gray-400 py-8">No recently viewed</div>';
         attachProductEvents(dom.recentlyViewedGrid);
     }
+    
     function renderRecommendations() {
         if (!dom.recommendationsGrid) return;
         let recs = [...allProducts];
@@ -545,9 +611,10 @@
         attachProductEvents(grid);
         renderRecommendations();
     }
+    
     function refreshAll() { applyFiltersAndRender(); renderRecentlyViewed(); renderRecommendations(); }
 
-    // Admin: product CRUD with stock
+    // Admin: product CRUD with quantity
     async function uploadMultipleImages(files) {
         const urls = [];
         for (const file of files) {
@@ -559,27 +626,35 @@
         }
         return urls;
     }
+    
     async function fetchProducts() {
         showLoader();
         try {
             const snap = await getDocs(collection(db, "products"));
-            allProducts = snap.docs.map(d => ({ id: d.id, ...d.data(), stock: d.data().stock || 'in' }));
+            allProducts = snap.docs.map(d => ({ 
+                id: d.id, 
+                ...d.data(), 
+                stock: d.data().stock || 'in',
+                quantity: d.data().quantity !== undefined ? d.data().quantity : 1
+            }));
             refreshAll();
             if (userRole === 'admin') { await renderAdminList(); await fetchUsers(); await fetchOrders(); }
         } catch(e) { showMessage('Failed to load products', 'error'); }
         finally { hideLoader(); }
     }
+    
     async function renderAdminList() {
         if (!dom.productList) return;
         if (!allProducts.length) { dom.productList.innerHTML = '<div class="text-gray-400">No products</div>'; return; }
         dom.productList.innerHTML = allProducts.map(p => `
             <div class="flex justify-between items-center border-b border-amber-500/30 py-2">
-                <div class="flex items-center gap-2"><img src="${p.images?.[0] || 'https://via.placeholder.com/40'}" class="w-8 h-8 object-cover rounded"><span><strong>${escapeHtml(p.name)}</strong> - ${p.price.toLocaleString()} RWF</span><span class="ml-2 ${p.stock === 'in' ? 'text-green-400' : 'text-red-400'} text-xs">${p.stock === 'in' ? 'In Stock' : 'Out of Stock'}</span></div>
+                <div class="flex items-center gap-2"><img src="${p.images?.[0] || 'https://via.placeholder.com/40'}" class="w-8 h-8 object-cover rounded"><span><strong>${escapeHtml(p.name)}</strong> - ${p.price.toLocaleString()} RWF</span><span class="ml-2 ${(p.stock === 'in' && p.quantity > 0) ? 'text-green-400' : 'text-red-400'} text-xs">${(p.stock === 'in' && p.quantity > 0) ? `In Stock (${p.quantity})` : 'Out of Stock'}</span></div>
                 <div><button class="edit-prod bg-blue-600 px-2 py-1 rounded text-sm mr-1" data-id="${p.id}">Edit</button><button class="del-prod bg-red-600 px-2 py-1 rounded text-sm" data-id="${p.id}">Del</button></div>
             </div>`).join('');
         dom.productList.querySelectorAll('.edit-prod').forEach(btn => btn.onclick = () => openEdit(btn.dataset.id));
         dom.productList.querySelectorAll('.del-prod').forEach(btn => btn.onclick = async () => { if (confirm('Delete product?')) await deleteProduct(btn.dataset.id); });
     }
+    
     async function deleteProduct(id) {
         showLoader();
         try {
@@ -590,6 +665,7 @@
         } catch(e) { showMessage('Delete failed', 'error'); }
         finally { hideLoader(); }
     }
+    
     async function openEdit(id) {
         const prod = allProducts.find(p => p.id === id);
         if (!prod) return;
@@ -598,15 +674,18 @@
         dom.productDesc.value = prod.description || '';
         dom.productPrice.value = prod.price;
         dom.productStock.value = prod.stock || 'in';
+        dom.productQuantity.value = prod.quantity || 1;
         dom.productFormTitle.innerText = '✏️ Update Watch';
         dom.cancelEdit.classList.remove('hidden');
         const previewDiv = document.getElementById('existingImagesPreview');
         if (previewDiv && prod.images) previewDiv.innerHTML = prod.images.map(url => `<img src="${url}" class="image-preview">`).join('');
     }
-    function resetEdit() { editingId = null; dom.productForm.reset(); dom.productStock.value = 'in'; dom.productFormTitle.innerText = '➕ Add New Watch'; dom.cancelEdit.classList.add('hidden'); document.getElementById('existingImagesPreview').innerHTML = ''; }
+    
+    function resetEdit() { editingId = null; dom.productForm.reset(); dom.productStock.value = 'in'; dom.productQuantity.value = 1; dom.productFormTitle.innerText = '➕ Add New Watch'; dom.cancelEdit.classList.add('hidden'); document.getElementById('existingImagesPreview').innerHTML = ''; }
+    
     dom.productForm.onsubmit = async (e) => {
         e.preventDefault();
-        const name = dom.productName.value.trim(), desc = dom.productDesc.value.trim(), price = parseInt(dom.productPrice.value), stock = dom.productStock.value;
+        const name = dom.productName.value.trim(), desc = dom.productDesc.value.trim(), price = parseInt(dom.productPrice.value), stock = dom.productStock.value, quantity = parseInt(dom.productQuantity.value);
         const files = Array.from(dom.productImages.files);
         if (!name || isNaN(price)) { showMessage('Name and valid price required', 'warning'); return; }
         showLoader();
@@ -616,12 +695,12 @@
                 const existingRef = doc(db, "products", editingId);
                 if (files.length) images = await uploadMultipleImages(files);
                 else { const old = (await getDoc(existingRef)).data(); images = old.images || []; }
-                await updateDoc(existingRef, { name, description: desc, price, images, stock, updatedAt: new Date() });
+                await updateDoc(existingRef, { name, description: desc, price, images, stock, quantity, updatedAt: new Date() });
                 showMessage('Product updated', 'success');
             } else {
                 if (!files.length) { showMessage('Select at least one image', 'warning'); return; }
                 images = await uploadMultipleImages(files);
-                await addDoc(collection(db, "products"), { name, description: desc, price, images, stock, createdAt: new Date() });
+                await addDoc(collection(db, "products"), { name, description: desc, price, images, stock, quantity, createdAt: new Date() });
                 showMessage('Product added', 'success');
             }
             resetEdit();
@@ -648,7 +727,7 @@
         try {
             const q = query(collection(db, "orders"), orderBy("createdAt", "desc"));
             const snap = await getDocs(q);
-            if (snap.empty) { dom.ordersList.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-gray-400">No orders yet</td></tr>'; return; }
+            if (snap.empty) { dom.ordersList.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-gray-400">No orders yet</td></table>'; return; }
             let html = '';
             snap.forEach(doc => {
                 const o = doc.data();
@@ -674,6 +753,7 @@
         } catch(err) { showMessage(getFriendlyError(err.code), 'error'); }
         finally { hideLoader(); }
     }
+    
     async function login(email, pwd) {
         showLoader();
         try {
@@ -687,6 +767,7 @@
         } catch(err) { showMessage(getFriendlyError(err.code), 'error'); }
         finally { hideLoader(); }
     }
+    
     function logout() { signOut(auth); showMessage('Logged out', 'info'); showHome(); pendingProduct = null; }
 
     // Navigation
@@ -698,6 +779,7 @@
     function showUser() { if (!currentUser) { showMessage('Please login first', 'warning'); return; } setActiveSection(dom.userSec, [dom.homeSec, dom.adminSec, dom.contactSec, dom.productDetailSec]); loadProfile(); }
     function showAdmin() { if (userRole !== 'admin') { showMessage('Admin only', 'error'); return; } setActiveSection(dom.adminSec, [dom.homeSec, dom.userSec, dom.contactSec, dom.productDetailSec]); fetchProducts(); fetchUsers(); fetchOrders(); }
     function setActiveSection(active, others) { active.classList.remove('hidden'); others.forEach(s => s.classList.add('hidden')); }
+    
     async function loadProfile() {
         if (!currentUser) return;
         try {
@@ -709,6 +791,7 @@
             } else dom.userInfo.innerHTML = '<p>Profile error</p>';
         } catch(e) { showMessage('Profile load error', 'error'); }
     }
+    
     function updateNav() {
         const logged = !!currentUser;
         dom.registerBtn.classList.toggle('hidden', logged);
@@ -717,6 +800,7 @@
         dom.userNav.classList.toggle('hidden', !logged);
         dom.adminNav.classList.toggle('hidden', userRole !== 'admin');
     }
+    
     onAuthStateChanged(auth, async (user) => {
         currentUser = user;
         if (user) {
@@ -744,12 +828,14 @@
     dom.cartBtn.onclick = () => { dom.cartSidebar.classList.remove('translate-x-full'); dom.cartOverlay.classList.remove('hidden'); };
     dom.closeCart.onclick = () => { dom.cartSidebar.classList.add('translate-x-full'); dom.cartOverlay.classList.add('hidden'); };
     dom.cartOverlay.onclick = () => { dom.cartSidebar.classList.add('translate-x-full'); dom.cartOverlay.classList.add('hidden'); };
+    
     dom.regForm.onsubmit = (e) => {
         e.preventDefault();
         const pwd = document.getElementById('regPassword').value, cp = document.getElementById('regConfirmPassword').value;
         if (pwd !== cp) { showMessage('Passwords mismatch', 'warning'); return; }
         register(document.getElementById('regEmail').value, pwd, document.getElementById('regFirstName').value, document.getElementById('regLastName').value);
     };
+    
     dom.loginForm.onsubmit = (e) => { e.preventDefault(); login(document.getElementById('loginEmail').value, document.getElementById('loginPassword').value); };
     dom.socialContainer.innerHTML = `<a href="https://www.instagram.com/__bullet_wi_gikondo__" target="_blank" class="text-pink-400 text-2xl"><i class="fab fa-instagram"></i></a> <a href="https://wa.me/250786811816" target="_blank" class="text-green-400 text-2xl"><i class="fab fa-whatsapp"></i></a> <a href="https://twitter.com/rollingwatch" target="_blank" class="text-sky-400 text-2xl"><i class="fab fa-twitter"></i></a>`;
     dom.searchInput.addEventListener('input', () => applyFiltersAndRender());
