@@ -416,7 +416,6 @@
         dom.orderPriceDisplay.innerText = product.price.toLocaleString();
         dom.orderAvailableDisplay.innerText = product.quantity;
         
-        // Set max attribute on quantity input
         const qtyInput = document.getElementById('orderQuantity');
         qtyInput.max = product.quantity;
         qtyInput.value = 1;
@@ -455,12 +454,10 @@
                 totalPrice: productPrice * quantity
             });
             
-            // Update product quantity in database
             const productRef = doc(db, "products", productId);
             const newQuantity = maxQuantity - quantity;
             await updateDoc(productRef, { quantity: newQuantity });
             
-            // Update local product data
             const productIndex = allProducts.findIndex(p => p.id === productId);
             if (productIndex !== -1) {
                 allProducts[productIndex].quantity = newQuantity;
@@ -485,7 +482,7 @@
         }
     }
 
-    // Product Detail & Related Products
+    // Product Detail & Related Products with scroll to product detail section
     function showProductDetail(productId) {
         const product = allProducts.find(p => p.id === productId);
         if (!product) return;
@@ -534,6 +531,13 @@
         dom.adminSec.classList.add('hidden');
         dom.contactSec.classList.add('hidden');
         dom.productDetailSec.classList.remove('hidden');
+        
+        // Scroll to the product detail section (where the product info is displayed)
+        const detailSection = document.getElementById('product-detail-section');
+        if (detailSection) {
+            detailSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        
         addRecentlyViewed(product.id);
     }
 
@@ -727,7 +731,7 @@
         try {
             const q = query(collection(db, "orders"), orderBy("createdAt", "desc"));
             const snap = await getDocs(q);
-            if (snap.empty) { dom.ordersList.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-gray-400">No orders yet</td></table>'; return; }
+            if (snap.empty) { dom.ordersList.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-gray-400">No orders yet</td></tr>'; return; }
             let html = '';
             snap.forEach(doc => {
                 const o = doc.data();
@@ -770,14 +774,32 @@
     
     function logout() { signOut(auth); showMessage('Logged out', 'info'); showHome(); pendingProduct = null; }
 
-    // Navigation
+    // Navigation with scroll to top for home
     function showHome() {
         setActiveSection(dom.homeSec, [dom.userSec, dom.adminSec, dom.contactSec, dom.productDetailSec]);
         fetchProducts();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-    function showContact() { setActiveSection(dom.contactSec, [dom.homeSec, dom.userSec, dom.adminSec, dom.productDetailSec]); }
-    function showUser() { if (!currentUser) { showMessage('Please login first', 'warning'); return; } setActiveSection(dom.userSec, [dom.homeSec, dom.adminSec, dom.contactSec, dom.productDetailSec]); loadProfile(); }
-    function showAdmin() { if (userRole !== 'admin') { showMessage('Admin only', 'error'); return; } setActiveSection(dom.adminSec, [dom.homeSec, dom.userSec, dom.contactSec, dom.productDetailSec]); fetchProducts(); fetchUsers(); fetchOrders(); }
+    
+    function showContact() { 
+        setActiveSection(dom.contactSec, [dom.homeSec, dom.userSec, dom.adminSec, dom.productDetailSec]); 
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    
+    function showUser() { 
+        if (!currentUser) { showMessage('Please login first', 'warning'); return; } 
+        setActiveSection(dom.userSec, [dom.homeSec, dom.adminSec, dom.contactSec, dom.productDetailSec]); 
+        loadProfile(); 
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    
+    function showAdmin() { 
+        if (userRole !== 'admin') { showMessage('Admin only', 'error'); return; } 
+        setActiveSection(dom.adminSec, [dom.homeSec, dom.userSec, dom.contactSec, dom.productDetailSec]); 
+        fetchProducts(); fetchUsers(); fetchOrders(); 
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    
     function setActiveSection(active, others) { active.classList.remove('hidden'); others.forEach(s => s.classList.add('hidden')); }
     
     async function loadProfile() {
@@ -848,7 +870,11 @@
     };
     document.getElementById('heroShopBtn')?.addEventListener('click', () => document.getElementById('productsGrid')?.scrollIntoView({ behavior: 'smooth' }));
     document.getElementById('heroExploreBtn')?.addEventListener('click', () => document.getElementById('productsGrid')?.scrollIntoView({ behavior: 'smooth' }));
-    dom.backToHomeBtn.onclick = showHome;
+    
+    dom.backToHomeBtn.onclick = () => {
+        showHome();
+    };
+    
     dom.closeCustomerModal.onclick = () => dom.customerModal.classList.add('hidden');
     dom.customerOrderForm.onsubmit = submitOrderAndAddToCart;
 
@@ -863,7 +889,6 @@
         openModal(dom.regModal);
     };
 
-    // Switch between login and register modals
     if (dom.switchToRegister) {
         dom.switchToRegister.onclick = () => {
             closeModal(dom.loginModal);
