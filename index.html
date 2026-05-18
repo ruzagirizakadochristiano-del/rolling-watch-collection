@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ROLLING WATCH COLLECTION | Timeless Luxury</title>
+    <title>Isaha yanjye | Timeless Luxury</title>
     <meta name="google-site-verification" content="2jL8GdxU9t9f92S00Ab5OuVwpAfjBo6VLhbGbkZpJNE" />
     <link rel="icon" type="image/png" href="logo.png">
     <meta name="google-site-verification" content="5ZVtUlEU9hJJRVhfdEobTpzI-oIvw4Ai4Ua4eZPhfY4" />
-    <meta property="og:title" content="ROLLING WATCH COLLECTION">
+    <meta property="og:title" content="Isaha yanjye">
     <meta property="og:description" content="Luxury watches at the best prices in RWF. Shop Richard Mille, Rolex, and more.">
     <meta property="og:image" content="https://ruzagirizakadochristiano-del.github.io/rolling-watch-collection/logo.png">
     <meta property="og:url" content="https://ruzagirizakadochristiano-del.github.io/rolling-watch-collection/">
@@ -49,9 +49,9 @@
 <div id="globalLoader" class="loader-overlay"><div class="spinner"></div></div>
 
 <!-- Navbar -->
-<<nav class="bg-black/80 backdrop-blur-md text-white px-6 py-4 flex justify-between items-center shadow-xl sticky top-0 z-30 border-b border-amber-700/40 flex-wrap gap-4">
+<nav class="bg-black/80 backdrop-blur-md text-white px-6 py-4 flex justify-between items-center shadow-xl sticky top-0 z-30 border-b border-amber-700/40 flex-wrap gap-4">
     <div class="flex items-center flex-wrap gap-3">
-        <div class="text-2xl font-bold tracking-wider"><i class="fas fa-crown text-amber-500 mr-2"></i>ROLLING WATCH <span class="gold-text">COLLECTION</span></div>
+        <div class="text-2xl font-bold tracking-wider"><i class="fas fa-crown text-amber-500 mr-2"></i>Isaha <span class="gold-text">yanjye</span></div>
         <!-- Contact info beside the brand name -->
         <div class="flex items-center gap-3 text-sm border-l border-amber-500/30 pl-3">
             <a href="https://wa.me/250786811816" target="_blank" class="hover:text-amber-400 transition flex items-center gap-1">
@@ -734,7 +734,7 @@
         if (!dom.userTable) return;
         try {
             const snap = await getDocs(collection(db, "users"));
-            let html = `<tr><th class="text-left text-amber-400">Name</th><th class="text-left text-amber-400">Email</th><th class="text-left text-amber-400">Role</th></tr>`;
+            let html = `</tr><th class="text-left text-amber-400">Name</th><th class="text-left text-amber-400">Email</th><th class="text-left text-amber-400">Role</th>`;
             snap.forEach(d => { const data = d.data(); html += `<tr><td class="py-1">${escapeHtml(data.firstName||'')} ${escapeHtml(data.lastName||'')}</td><td class="py-1">${escapeHtml(data.email)}</td><td class="py-1">${escapeHtml(data.role||'user')}</td>`; });
             dom.userTable.innerHTML = html;
             if (dom.perfStats) dom.perfStats.innerHTML = `<div class="p-3"><p class="font-semibold text-amber-400">📊 Performance</p><p>Users: ${snap.size}</p><p>Products: ${allProducts.length}</p><p>Cart items: ${cart.reduce((a,b)=>a+b.quantity,0)}</p></div>`;
@@ -753,7 +753,8 @@
                 html += `<tr class="border-b border-amber-500/20"><td class="p-2">${escapeHtml(o.fullName)}</td><td class="p-2">${escapeHtml(o.email)}</td><td class="p-2">${escapeHtml(o.phone)}</td><td class="p-2">${escapeHtml(o.productName)}</td><td class="p-2">${o.quantity}</td><td class="p-2">${escapeHtml(o.location)}</td><td class="p-2">${escapeHtml(o.notes || '')}</td><td class="p-2">${new Date(o.createdAt?.toDate()).toLocaleString()}</td></tr>`;
             });
             dom.ordersList.innerHTML = html;
-        } catch(e) { console.warn(e); dom.ordersList.innerHTML = '<tr><td colspan="8" class="text-center text-red-400">Error loading orders</td></tr>'; }
+        } catch(e) { console.warn(e); dom.ordersList.innerHTML = '<tr><td colspan="8" class="text-center text-red-400">Error loading orders<tr></table>';
+        }
     }
 
     // Authentication
