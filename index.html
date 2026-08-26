@@ -231,7 +231,7 @@
 <div id="loginModal" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 hidden"><div class="bg-gradient-to-br from-gray-900 to-black rounded-2xl max-w-md w-full p-6 relative border border-amber-500/30"><button id="closeLoginModal" class="absolute top-3 right-4 text-2xl text-gray-400 hover:text-amber-400">&times;</button><h3 class="text-2xl font-bold text-amber-400 mb-4">Welcome Back</h3><form id="loginForm"><input type="email" id="loginEmail" placeholder="Email Address" class="w-full bg-gray-800 text-white border border-amber-500/50 p-2 mb-3 rounded-lg" required><input type="password" id="loginPassword" placeholder="Password" class="w-full bg-gray-800 text-white border border-amber-500/50 p-2 mb-4 rounded-lg" required><button type="submit" class="w-full btn-gold text-black py-2 rounded-full font-semibold">Login</button></form><p class="text-center text-gray-400 text-sm mt-4">Don't have an account? <button id="switchToRegister" class="text-amber-400 hover:underline">Register here</button></p></div></div>
 
 <script type="module">
-    // ---------- Firebase Config (Your actual config) ----------
+    // ---------- Firebase Config ----------
     const firebaseConfig = {
       apiKey: "AIzaSyDZxBIpI6QdN1MjK3t1N_m4BVfEEoI_SGY",
       authDomain: "rolling-watch-collection.firebaseapp.com",
@@ -943,6 +943,5 @@
     fetchProducts();
     showHome();
 </script>
-<script src="firebase.js"></script>
 </body>
 </html>
